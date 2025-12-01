@@ -1,0 +1,8 @@
+__pycache__
+.local/*
+*.log
+etc/data/*.yaml
+images/
+
+mysql_data/
+backup.sql

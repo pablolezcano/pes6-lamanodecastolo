@@ -1,0 +1,62 @@
+version: '3.8'
+
+services:
+  gateway:
+    build: ./gateway
+    ports:
+      - "80:80"
+    depends_on:
+      - frontend
+      - server
+    networks:
+      - pes6-net
+
+  frontend:
+    build: ./frontend
+    expose:
+      - "80"
+    networks:
+      - pes6-net
+
+  db:
+    build:
+      context: ./backend/sql
+      dockerfile: Dockerfile
+    image: pes6-db
+    container_name: pes6-mysql
+    restart: always
+    environment:
+      MYSQL_DATABASE: sixserver
+      MYSQL_USER: sixserver
+      MYSQL_PASSWORD: proevo
+      MYSQL_ROOT_PASSWORD: rootpassword
+    expose:
+      - "3306"
+    volumes:
+      - ./mysql_data:/var/lib/mysql
+    networks:
+      - pes6-net
+
+  server:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    image: fiveserver
+    container_name: sixserver
+    restart: always
+    depends_on:
+      - db
+    expose:
+      - "8190"
+      - "8191"
+      - "8192"
+    ports:
+      # Game ports must remain public
+      - "10881:10881"
+      - "20200-20203:20200-20203"
+    networks:
+      - pes6-net
+
+networks:
+  pes6-net:
+    driver: bridge
