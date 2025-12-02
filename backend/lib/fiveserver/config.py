@@ -175,8 +175,11 @@ class FiveServerConfig:
         # initialize MaxUsers, set to default if missing from config
         self.serverConfig.MaxUsers = self.serverConfig.get('MaxUsers', 1000)
 
+        self.reloadLobbies()
+
+    def reloadLobbies(self):
         self.lobbies = []
-        for i, item in enumerate(serverConfig.Lobbies):
+        for i, item in enumerate(self.serverConfig.Lobbies):
             try: name = item['name']
             except TypeError: name = str(item)
             except KeyError:
@@ -216,6 +219,7 @@ class FiveServerConfig:
             else:
                 aLobby.typeCode = 0x5f # default: open
             self.lobbies.append(aLobby)
+        log.msg('Lobbies reloaded. Total: %d' % len(self.lobbies))
 
         # auto-IP detector site
         try: 

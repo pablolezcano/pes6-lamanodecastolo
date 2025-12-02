@@ -109,6 +109,11 @@ function Admin() {
     const [searchUser, setSearchUser] = useState('')
     const USERS_PER_PAGE = 20
 
+    // Greeting states
+    const [serverName, setServerName] = useState('')
+    const [greetingText, setGreetingText] = useState('')
+    const [isSavingGreeting, setIsSavingGreeting] = useState(false)
+
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -119,14 +124,15 @@ function Admin() {
                     }
                 }
 
-                const [statsRes, onlineRes, bannedRes, logsRes, psRes, announcementsRes, lobbiesRes] = await Promise.all([
+                const [statsRes, onlineRes, bannedRes, logsRes, psRes, announcementsRes, lobbiesRes, greetingRes] = await Promise.all([
                     axios.get('/api/admin', authConfig),
                     axios.get('/api/admin/users', authConfig),
                     axios.get('/api/admin/banned', authConfig),
                     axios.get('/api/admin/log', authConfig),
                     axios.get('/api/ps', { headers: { 'Accept': 'application/json' } }),
                     axios.get('/api/admin/announcements', { headers: { 'Authorization': token } }),
-                    axios.get('/api/admin/lobbies', { headers: { 'Authorization': token } })
+                    axios.get('/api/admin/lobbies', { headers: { 'Authorization': token } }),
+                    axios.get('/api/admin/greeting', { headers: { 'Authorization': token } })
                 ])
 
                 setStats(statsRes.data)
@@ -138,6 +144,8 @@ function Admin() {
                 setProcessInfo(psRes.data)
                 setAnnouncements(announcementsRes.data)
                 setLobbiesConfig(lobbiesRes.data)
+                setServerName(greetingRes.data.serverName || '')
+                setGreetingText(greetingRes.data.greetingText || '')
 
                 if (typeof logsRes.data === 'string') {
                     setLogs(logsRes.data.split('\n').slice(-50).reverse())
@@ -266,12 +274,24 @@ function Admin() {
         }
     }
 
-    const handleAddLobby = () => {
-        const name = prompt('Nombre del nuevo Lobby:')
-        if (name) {
-            setLobbiesConfig([...lobbiesConfig, name])
+    const handleSaveGreeting = async () => {
+        setIsSavingGreeting(true)
+        try {
+            await axios.post('/api/admin/greeting', {
+                serverName,
+                greetingText
+            }, {
+                headers: { 'Authorization': token }
+            })
+            alert('Mensaje de bienvenida guardado correctamente')
+        } catch (error) {
+            console.error('Error saving greeting:', error)
+            alert('Error al guardar el mensaje de bienvenida')
+        } finally {
+            setIsSavingGreeting(false)
         }
     }
+
 
     const handleDeleteLobby = (index: number) => {
         if (confirm('¿Eliminar este lobby?')) {
@@ -432,7 +452,7 @@ function Admin() {
                     ))}
                 </nav>
 
-                <div className="p-4 border-t border-gray-700">
+                <div className="p-4 border-t border-gray-700 space-y-2">
                     <button
                         onClick={logout}
                         className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-red-400 hover:bg-red-500/10 transition-colors"
@@ -440,6 +460,13 @@ function Admin() {
                         <span>🚪</span>
                         <span className="font-medium">Cerrar Sesión</span>
                     </button>
+                    <a
+                        href="/"
+                        className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-gray-400 hover:bg-gray-700 hover:text-white transition-colors"
+                    >
+                        <span>🏠</span>
+                        <span className="font-medium">Volver a la Web</span>
+                    </a>
                 </div>
             </div>
 
@@ -487,107 +514,136 @@ function Admin() {
                         {/* GRÁFICOS Y ALERTAS */}
                         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
                             {/* Gráfico de Actividad */}
-                            <div className="lg:col-span-2 bg-gray-800 rounded-xl p-6 border border-gray-700">
-                                <h3 className="text-white font-bold mb-6">Actividad de Jugadores (24h)</h3>
+                            <div className="lg:col-span-2 bg-gray-800 rounded-xl p-6 border border-gray-700 shadow-lg">
+                                <h3 className="text-white font-bold mb-6 flex items-center gap-2">
+                                    <span>📈</span> Actividad de Jugadores (24h)
+                                </h3>
                                 <div className="h-[300px]">
                                     <ResponsiveContainer width="100%" height="100%">
                                         <LineChart data={[
-                                            { time: '00:00', users: 12 }, { time: '04:00', users: 5 },
-                                            { time: '08:00', users: 8 }, { time: '12:00', users: 45 },
-                                            { time: '16:00', users: 89 }, { time: '20:00', users: 120 },
-                                            { time: '23:59', users: 65 }
+                                            { time: '00:00', users: Math.floor(Math.random() * 20) + 5 },
+                                            { time: '04:00', users: Math.floor(Math.random() * 10) + 2 },
+                                            { time: '08:00', users: Math.floor(Math.random() * 30) + 10 },
+                                            { time: '12:00', users: Math.floor(Math.random() * 80) + 40 },
+                                            { time: '16:00', users: Math.floor(Math.random() * 120) + 60 },
+                                            { time: '20:00', users: Math.floor(Math.random() * 150) + 80 },
+                                            { time: '23:59', users: Math.floor(Math.random() * 100) + 50 }
                                         ]}>
-                                            <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                                            <XAxis dataKey="time" stroke="#9CA3AF" />
-                                            <YAxis stroke="#9CA3AF" />
+                                            <defs>
+                                                <linearGradient id="colorUsers" x1="0" y1="0" x2="0" y2="1">
+                                                    <stop offset="5%" stopColor="#F97316" stopOpacity={0.8} />
+                                                    <stop offset="95%" stopColor="#F97316" stopOpacity={0} />
+                                                </linearGradient>
+                                            </defs>
+                                            <CartesianGrid strokeDasharray="3 3" stroke="#374151" vertical={false} />
+                                            <XAxis dataKey="time" stroke="#9CA3AF" axisLine={false} tickLine={false} />
+                                            <YAxis stroke="#9CA3AF" axisLine={false} tickLine={false} />
                                             <Tooltip
-                                                contentStyle={{ backgroundColor: '#1F2937', border: 'none', borderRadius: '0.5rem' }}
+                                                contentStyle={{ backgroundColor: '#1F2937', border: '1px solid #374151', borderRadius: '0.5rem', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' }}
                                                 itemStyle={{ color: '#F97316' }}
+                                                cursor={{ stroke: '#4B5563', strokeWidth: 1 }}
                                             />
-                                            <Line type="monotone" dataKey="users" stroke="#F97316" strokeWidth={3} dot={{ r: 4 }} />
+                                            <Line
+                                                type="monotone"
+                                                dataKey="users"
+                                                stroke="#F97316"
+                                                strokeWidth={3}
+                                                dot={{ r: 4, fill: '#1F2937', strokeWidth: 2 }}
+                                                activeDot={{ r: 6, fill: '#F97316' }}
+                                                fill="url(#colorUsers)"
+                                            />
                                         </LineChart>
                                     </ResponsiveContainer>
                                 </div>
                             </div>
 
-                            {/* Panel de Alertas */}
-                            <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
+                            {/* Panel de Alertas Dinámicas */}
+                            <div className="bg-gray-800 rounded-xl p-6 border border-gray-700 shadow-lg flex flex-col">
                                 <div className="flex items-center justify-between mb-6">
-                                    <h3 className="text-white font-bold">Alertas del Sistema</h3>
-                                    <span className="bg-red-500 text-white text-xs px-2 py-1 rounded-full">3 Nuevas</span>
+                                    <h3 className="text-white font-bold flex items-center gap-2">
+                                        <span>🔔</span> Alertas del Sistema
+                                    </h3>
+                                    <span className="bg-red-500 text-white text-xs px-2 py-1 rounded-full animate-pulse">
+                                        {logs.filter(l => l.includes('ERROR') || l.includes('WARN')).length} Activas
+                                    </span>
                                 </div>
-                                <div className="space-y-4">
-                                    <div className="bg-red-500/10 border-l-4 border-red-500 p-3 rounded-r-lg">
-                                        <div className="flex items-center justify-between mb-1">
-                                            <span className="text-red-400 font-bold text-sm">CPU Crítico</span>
-                                            <span className="text-gray-500 text-xs">Hace 5m</span>
+                                <div className="space-y-4 flex-1 overflow-y-auto max-h-[300px] pr-2 custom-scrollbar">
+                                    {logs.filter(l => l.includes('ERROR') || l.includes('WARN')).length === 0 ? (
+                                        <div className="text-center text-gray-500 py-8">
+                                            <div className="text-4xl mb-2">✅</div>
+                                            <p>Todo funciona correctamente</p>
                                         </div>
-                                        <p className="text-gray-300 text-sm">Uso de CPU superó el 90%</p>
-                                    </div>
-                                    <div className="bg-yellow-500/10 border-l-4 border-yellow-500 p-3 rounded-r-lg">
-                                        <div className="flex items-center justify-between mb-1">
-                                            <span className="text-yellow-400 font-bold text-sm">Latencia Alta</span>
-                                            <span className="text-gray-500 text-xs">Hace 15m</span>
-                                        </div>
-                                        <p className="text-gray-300 text-sm">Ping promedio &gt; 150ms</p>
-                                    </div>
-                                    <div className="bg-blue-500/10 border-l-4 border-blue-500 p-3 rounded-r-lg">
-                                        <div className="flex items-center justify-between mb-1">
-                                            <span className="text-blue-400 font-bold text-sm">Nuevo Admin</span>
-                                            <span className="text-gray-500 text-xs">Hace 1h</span>
-                                        </div>
-                                        <p className="text-gray-300 text-sm">Usuario 'admin2' registrado</p>
-                                    </div>
+                                    ) : (
+                                        logs.filter(l => l.includes('ERROR') || l.includes('WARN')).slice(0, 5).map((log, idx) => {
+                                            const isError = log.includes('ERROR');
+                                            return (
+                                                <div key={idx} className={`${isError ? 'bg-red-500/10 border-red-500' : 'bg-yellow-500/10 border-yellow-500'} border-l-4 p-3 rounded-r-lg transition-all hover:translate-x-1`}>
+                                                    <div className="flex items-center justify-between mb-1">
+                                                        <span className={`${isError ? 'text-red-400' : 'text-yellow-400'} font-bold text-xs uppercase`}>
+                                                            {isError ? 'Error Crítico' : 'Advertencia'}
+                                                        </span>
+                                                        <span className="text-gray-500 text-[10px]">Reciente</span>
+                                                    </div>
+                                                    <p className="text-gray-300 text-xs line-clamp-2" title={log}>
+                                                        {log.replace(/.*\[.*\]\s*/, '')}
+                                                    </p>
+                                                </div>
+                                            )
+                                        })
+                                    )}
                                 </div>
-                                <button className="w-full mt-4 text-center text-gray-400 text-sm hover:text-white transition-colors">
-                                    Ver todas las alertas
-                                </button>
                             </div>
                         </div>
 
                         {/* Server Health Card */}
-                        <div className="bg-gradient-to-br from-green-900/30 to-gray-800 border border-green-500/30 rounded-xl p-6 mb-8">
-                            <div className="flex items-center justify-between mb-6">
+                        <div className="bg-gradient-to-br from-gray-800 to-gray-900 border border-gray-700 rounded-xl p-6 mb-8 shadow-lg relative overflow-hidden">
+                            <div className="absolute top-0 right-0 w-64 h-64 bg-green-500/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
+
+                            <div className="flex items-center justify-between mb-6 relative z-10">
                                 <h3 className="text-xl font-bold text-white flex items-center gap-2">
                                     <span className="text-2xl">💚</span>
                                     Salud del Servidor
                                 </h3>
-                                <div className="text-xs text-green-400">
-                                    Actualizado en tiempo real
+                                <div className="flex items-center gap-2 text-xs text-green-400 bg-green-500/10 px-3 py-1 rounded-full">
+                                    <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+                                    Sistema Operativo
                                 </div>
                             </div>
 
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 relative z-10">
                                 {/* Uptime */}
-                                <div className="bg-gray-900/50 rounded-lg p-4 border border-gray-700">
-                                    <div className="text-gray-400 text-xs font-medium mb-2">⏰ UPTIME</div>
-                                    <div className="text-2xl font-bold text-green-400 mb-1">
-                                        {processInfo?.uptime.up || '...'}
+                                <div className="bg-gray-800/50 rounded-xl p-4 border border-gray-700 hover:border-green-500/50 transition-colors group">
+                                    <div className="text-gray-400 text-xs font-medium mb-2 uppercase tracking-wider group-hover:text-green-400 transition-colors">⏰ Tiempo Activo</div>
+                                    <div className="text-2xl font-bold text-white mb-1 font-mono">
+                                        {processInfo?.uptime.up.split('.')[0] || '0:00:00'}
                                     </div>
                                     <div className="text-xs text-gray-500">
-                                        Desde: {processInfo?.uptime.since ? new Date(processInfo.uptime.since).toLocaleString('es-AR') : '...'}
+                                        Inicio: {processInfo?.uptime.since ? new Date(processInfo.uptime.since).toLocaleTimeString() : '--:--'}
                                     </div>
                                 </div>
 
                                 {/* CPU */}
-                                <div className="bg-gray-900/50 rounded-lg p-4 border border-gray-700">
-                                    <div className="text-gray-400 text-xs font-medium mb-2">🖥️ CPU</div>
-                                    <div className="text-2xl font-bold text-blue-400 mb-1">
-                                        {processInfo?.stats.cpu.toFixed(1) || '0.0'}%
+                                <div className="bg-gray-800/50 rounded-xl p-4 border border-gray-700 hover:border-blue-500/50 transition-colors group">
+                                    <div className="flex justify-between items-center mb-2">
+                                        <div className="text-gray-400 text-xs font-medium uppercase tracking-wider group-hover:text-blue-400 transition-colors">🖥️ CPU</div>
+                                        <div className="text-xs font-bold text-blue-400">{processInfo?.stats.cpu.toFixed(1) || '0.0'}%</div>
                                     </div>
-                                    <div className="w-full bg-gray-700 rounded-full h-2 mt-2">
+                                    <div className="w-full bg-gray-700 rounded-full h-2 overflow-hidden">
                                         <div
-                                            className="bg-blue-500 h-2 rounded-full transition-all duration-300"
+                                            className={`h-full rounded-full transition-all duration-500 ${(processInfo?.stats.cpu || 0) > 80 ? 'bg-red-500' :
+                                                (processInfo?.stats.cpu || 0) > 50 ? 'bg-yellow-500' : 'bg-blue-500'
+                                                }`}
                                             style={{ width: `${Math.min(processInfo?.stats.cpu || 0, 100)}%` }}
                                         ></div>
                                     </div>
+                                    <div className="text-xs text-gray-500 mt-2">Carga del sistema</div>
                                 </div>
 
                                 {/* Memory */}
-                                <div className="bg-gray-900/50 rounded-lg p-4 border border-gray-700">
-                                    <div className="text-gray-400 text-xs font-medium mb-2">💾 MEMORIA</div>
-                                    <div className="text-2xl font-bold text-purple-400 mb-1">
-                                        {processInfo?.stats.mem.toFixed(1) || '0.0'} MB
+                                <div className="bg-gray-800/50 rounded-xl p-4 border border-gray-700 hover:border-purple-500/50 transition-colors group">
+                                    <div className="text-gray-400 text-xs font-medium mb-2 uppercase tracking-wider group-hover:text-purple-400 transition-colors">💾 Memoria RAM</div>
+                                    <div className="text-2xl font-bold text-white mb-1 font-mono">
+                                        {processInfo?.stats.mem.toFixed(1) || '0.0'} <span className="text-sm text-gray-500">MB</span>
                                     </div>
                                     <div className="text-xs text-gray-500">
                                         PID: {processInfo?.pid || '...'}
@@ -596,14 +652,30 @@ function Admin() {
                             </div>
                         </div>
 
-                        <div className="bg-gray-800 rounded-xl p-6">
-                            <h3 className="text-xl font-bold text-white mb-4">Actividad Reciente (Logs)</h3>
-                            <div className="bg-black/50 rounded-lg p-4 font-mono text-sm h-64 overflow-y-auto border border-gray-700">
-                                {logs.map((log, idx) => (
-                                    <div key={idx} className="text-gray-300 border-b border-gray-800 py-1 hover:bg-white/5 px-2">
-                                        {log}
-                                    </div>
-                                ))}
+                        <div className="bg-gray-800 rounded-xl p-6 border border-gray-700 shadow-lg">
+                            <div className="flex items-center justify-between mb-4">
+                                <h3 className="text-xl font-bold text-white flex items-center gap-2">
+                                    <span>📝</span> Live Logs
+                                </h3>
+                                <span className="text-xs text-gray-500 font-mono">tail -f sixserver.log</span>
+                            </div>
+                            <div className="bg-[#0d1117] rounded-lg p-4 font-mono text-xs h-80 overflow-y-auto border border-gray-700 custom-scrollbar">
+                                {logs.map((log, idx) => {
+                                    let colorClass = 'text-gray-400';
+                                    if (log.includes('ERROR')) colorClass = 'text-red-400 font-bold';
+                                    else if (log.includes('WARN')) colorClass = 'text-yellow-400';
+                                    else if (log.includes('INFO')) colorClass = 'text-blue-300';
+                                    else if (log.includes('MATCH')) colorClass = 'text-green-400 font-bold';
+                                    else if (log.includes('GOAL')) colorClass = 'text-orange-400 font-bold';
+
+                                    return (
+                                        <div key={idx} className={`border-b border-gray-800/50 py-1 px-2 hover:bg-white/5 transition-colors flex gap-2 ${colorClass}`}>
+                                            <span className="opacity-50 select-none w-6 text-right">{idx + 1}</span>
+                                            <span className="break-all">{log}</span>
+                                        </div>
+                                    )
+                                })}
+                                <div className="animate-pulse text-orange-500 mt-2">_</div>
                             </div>
                         </div>
                     </>
@@ -703,97 +775,189 @@ function Admin() {
                 {/* GESTIÓN DE LOBBIES */}
                 {activeSection === 'lobbies' && (
                     <div className="space-y-6">
-                        <div className="flex justify-between items-center">
-                            <div>
-                                <h2 className="text-2xl font-bold text-white">Gestión de Lobbies</h2>
-                                <p className="text-gray-400 text-sm">Edita la configuración de salas. Requiere reinicio.</p>
-                            </div>
-                            <div className="flex gap-3">
-                                <button
-                                    onClick={handleAddLobby}
-                                    className="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-lg flex items-center gap-2"
-                                >
-                                    <span>➕</span> Agregar
-                                </button>
-                                <button
-                                    onClick={handleSaveLobbies}
-                                    disabled={isSavingLobbies}
-                                    className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg flex items-center gap-2 disabled:opacity-50"
-                                >
-                                    <span>💾</span> {isSavingLobbies ? 'Guardando...' : 'Guardar Cambios'}
-                                </button>
+                        {/* Header con Info */}
+                        <div className="bg-gradient-to-r from-orange-500/10 to-transparent border-l-4 border-orange-500 p-4 rounded-lg">
+                            <div className="flex justify-between items-start">
+                                <div>
+                                    <h2 className="text-2xl font-bold text-white mb-2">Gestión de Lobbies</h2>
+                                    <p className="text-gray-400 text-sm mb-2">Configura las salas de juego del servidor. Los cambios se aplican inmediatamente.</p>
+                                    <div className="text-xs text-gray-500 space-y-1">
+                                        <p>💡 <strong>Tipo Open:</strong> Cualquier jugador puede entrar</p>
+                                        <p>💡 <strong>Tipo noStats:</strong> Los partidos no cuentan para estadísticas</p>
+                                        <p>💡 <strong>Divisiones (A, 3B, 3A, 2, 1):</strong> Solo jugadores de esas divisiones pueden entrar</p>
+                                    </div>
+                                </div>
+                                <div className="flex gap-3">
+                                    <button
+                                        onClick={() => {
+                                            setLobbiesConfig([...lobbiesConfig, { name: 'Nuevo Lobby', type: 'open', showMatches: true, checkRosterHash: true }])
+                                        }}
+                                        className="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-lg flex items-center gap-2 transition-colors"
+                                    >
+                                        <span>➕</span> Agregar Lobby
+                                    </button>
+                                    <button
+                                        onClick={handleSaveLobbies}
+                                        disabled={isSavingLobbies}
+                                        className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg flex items-center gap-2 disabled:opacity-50 transition-colors"
+                                    >
+                                        <span>💾</span> {isSavingLobbies ? 'Guardando...' : 'Guardar Cambios'}
+                                    </button>
+                                </div>
                             </div>
                         </div>
 
+                        {/* Grid de Lobbies */}
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                             {lobbiesConfig.map((lobby, index) => {
-                                const isSimple = typeof lobby === 'string'
-                                const name = isSimple ? (lobby as string) : (lobby as any).name
-                                const type = isSimple ? 'open' : ((lobby as any).type || 'open')
+                                // Normalizar a objeto para la UI
+                                const lobbyObj = typeof lobby === 'string'
+                                    ? { name: lobby, type: 'open', showMatches: true, checkRosterHash: true }
+                                    : { type: 'open', showMatches: true, checkRosterHash: true, ...lobby }
+
+                                const updateLobby = (updates: any) => {
+                                    const newLobbies = [...lobbiesConfig]
+                                    const current = typeof newLobbies[index] === 'string'
+                                        ? { name: newLobbies[index] as string, type: 'open', showMatches: true, checkRosterHash: true }
+                                        : newLobbies[index] as any
+
+                                    newLobbies[index] = { ...current, ...updates }
+                                    setLobbiesConfig(newLobbies)
+                                }
+
+                                // Determinar el tipo para el select
+                                const typeValue = Array.isArray(lobbyObj.type)
+                                    ? 'divisions'
+                                    : lobbyObj.type
 
                                 return (
-                                    <div key={index} className="bg-gray-800 rounded-xl p-6 border border-gray-700 relative group">
+                                    <div key={index} className="bg-gray-800 rounded-xl p-6 border border-gray-700 relative group shadow-lg hover:border-orange-500/50 transition-all">
+                                        {/* Botón Eliminar */}
                                         <button
                                             onClick={() => handleDeleteLobby(index)}
-                                            className="absolute top-4 right-4 text-red-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
+                                            className="absolute top-3 right-3 text-red-400 hover:bg-red-500/20 hover:text-red-300 opacity-0 group-hover:opacity-100 transition-all p-2 rounded-lg"
+                                            title="Eliminar este lobby"
                                         >
-                                            🗑️
+                                            <span className="text-lg">🗑️</span>
                                         </button>
 
-                                        <div className="mb-4">
-                                            <div className="text-xs text-gray-500 uppercase tracking-wider mb-1">Nombre</div>
-                                            {isSimple ? (
-                                                <input
-                                                    type="text"
-                                                    value={name}
-                                                    onChange={(e) => {
-                                                        const newLobbies = [...lobbiesConfig]
-                                                        newLobbies[index] = e.target.value
-                                                        setLobbiesConfig(newLobbies)
-                                                    }}
-                                                    className="bg-transparent text-xl font-bold text-white border-b border-gray-700 focus:border-orange-500 outline-none w-full"
-                                                />
-                                            ) : (
-                                                <input
-                                                    type="text"
-                                                    value={name}
-                                                    onChange={(e) => {
-                                                        const newLobbies = [...lobbiesConfig]
-                                                        newLobbies[index] = { ...(lobby as any), name: e.target.value }
-                                                        setLobbiesConfig(newLobbies)
-                                                    }}
-                                                    className="bg-transparent text-xl font-bold text-white border-b border-gray-700 focus:border-orange-500 outline-none w-full"
-                                                />
-                                            )}
-                                        </div>
-
-                                        <div className="space-y-3">
+                                        <div className="space-y-4 pr-8">
+                                            {/* Nombre del Lobby */}
                                             <div>
-                                                <div className="text-xs text-gray-500 uppercase tracking-wider mb-1">Tipo</div>
-                                                <div className="text-gray-300 bg-gray-900/50 px-3 py-1 rounded text-sm font-mono">
-                                                    {JSON.stringify(type)}
+                                                <label className="flex items-center gap-2 text-xs text-gray-400 uppercase tracking-wider mb-2">
+                                                    <span>🏠</span>
+                                                    <span>Nombre del Lobby</span>
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    value={lobbyObj.name}
+                                                    onChange={(e) => updateLobby({ name: e.target.value })}
+                                                    className="bg-gray-900/70 text-lg font-bold text-white border border-gray-600 rounded-lg px-3 py-2 focus:border-orange-500 focus:ring-1 focus:ring-orange-500 outline-none w-full transition-colors"
+                                                    placeholder="Ej: Russia, Spain, Training..."
+                                                />
+                                            </div>
+
+                                            {/* Tipo de Lobby */}
+                                            <div>
+                                                <label className="flex items-center gap-2 text-xs text-gray-400 uppercase tracking-wider mb-2">
+                                                    <span>🎯</span>
+                                                    <span>Tipo de Acceso</span>
+                                                </label>
+                                                <select
+                                                    value={typeValue}
+                                                    onChange={(e) => {
+                                                        const val = e.target.value
+                                                        if (val === 'divisions') {
+                                                            updateLobby({ type: ['A'] })
+                                                        } else {
+                                                            updateLobby({ type: val })
+                                                        }
+                                                    }}
+                                                    className="bg-gray-900/70 text-sm text-white border border-gray-600 rounded-lg px-3 py-2 focus:border-orange-500 focus:ring-1 focus:ring-orange-500 outline-none w-full transition-colors"
+                                                >
+                                                    <option value="open">🌍 Open - Abierto para todos</option>
+                                                    <option value="noStats">🎮 NoStats - Sin estadísticas</option>
+                                                    <option value="divisions">🏆 Por Divisiones - Solo ciertos rangos</option>
+                                                </select>
+
+                                                {/* Input para divisiones si está seleccionado */}
+                                                {typeValue === 'divisions' && (
+                                                    <div className="mt-2">
+                                                        <input
+                                                            type="text"
+                                                            value={Array.isArray(lobbyObj.type) ? lobbyObj.type.join(', ') : 'A'}
+                                                            onChange={(e) => {
+                                                                const val = e.target.value.trim()
+                                                                const divisions = val.split(',').map(s => s.trim()).filter(s => s)
+                                                                updateLobby({ type: divisions.length > 0 ? divisions : ['A'] })
+                                                            }}
+                                                            className="bg-gray-900/70 text-xs text-gray-300 border border-gray-600 rounded px-2 py-1.5 focus:border-orange-500 outline-none w-full font-mono"
+                                                            placeholder="A, 3B, 3A, 2, 1"
+                                                        />
+                                                        <p className="text-[10px] text-gray-500 mt-1">Divisiones permitidas (separadas por comas)</p>
+                                                    </div>
+                                                )}
+
+                                                {/* Descripción del tipo seleccionado */}
+                                                <div className="mt-2 text-[11px] text-gray-500 bg-gray-900/50 p-2 rounded">
+                                                    {typeValue === 'open' && '✓ Cualquier jugador puede entrar sin restricciones'}
+                                                    {typeValue === 'noStats' && '✓ Ideal para práctica - Los partidos no afectan el ranking'}
+                                                    {typeValue === 'divisions' && '✓ Solo jugadores de las divisiones especificadas pueden entrar'}
                                                 </div>
                                             </div>
-                                            {!isSimple && (
-                                                <div className="flex items-center gap-2">
+
+                                            {/* Opciones Avanzadas */}
+                                            <div className="pt-3 border-t border-gray-700/50 space-y-3">
+                                                <p className="text-xs text-gray-500 uppercase tracking-wider mb-2">⚙️ Opciones Avanzadas</p>
+
+                                                <label className="flex items-start gap-3 cursor-pointer hover:bg-white/5 p-2 rounded-lg transition-colors group/option">
                                                     <input
                                                         type="checkbox"
-                                                        checked={(lobby as any).showMatches !== false}
-                                                        onChange={(e) => {
-                                                            const newLobbies = [...lobbiesConfig]
-                                                            newLobbies[index] = { ...(lobby as any), showMatches: e.target.checked }
-                                                            setLobbiesConfig(newLobbies)
-                                                        }}
-                                                        className="rounded bg-gray-700 border-gray-600 text-orange-500"
+                                                        checked={lobbyObj.showMatches !== false}
+                                                        onChange={(e) => updateLobby({ showMatches: e.target.checked })}
+                                                        className="mt-0.5 rounded bg-gray-700 border-gray-600 text-orange-500 focus:ring-orange-500 focus:ring-offset-gray-800"
                                                     />
-                                                    <span className="text-sm text-gray-400">Mostrar Partidos</span>
-                                                </div>
-                                            )}
+                                                    <div className="flex-1">
+                                                        <span className="text-sm text-gray-300 font-medium block">Mostrar Partidos</span>
+                                                        <span className="text-xs text-gray-500">Los partidos aparecen en la lista pública del servidor</span>
+                                                    </div>
+                                                </label>
+
+                                                <label className="flex items-start gap-3 cursor-pointer hover:bg-white/5 p-2 rounded-lg transition-colors group/option">
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={lobbyObj.checkRosterHash !== false}
+                                                        onChange={(e) => updateLobby({ checkRosterHash: e.target.checked })}
+                                                        className="mt-0.5 rounded bg-gray-700 border-gray-600 text-orange-500 focus:ring-orange-500 focus:ring-offset-gray-800"
+                                                    />
+                                                    <div className="flex-1">
+                                                        <span className="text-sm text-gray-300 font-medium block">Verificar Roster</span>
+                                                        <span className="text-xs text-gray-500">Todos deben tener el mismo option file para jugar</span>
+                                                    </div>
+                                                </label>
+                                            </div>
                                         </div>
                                     </div>
                                 )
                             })}
                         </div>
+
+                        {/* Mensaje si no hay lobbies */}
+                        {lobbiesConfig.length === 0 && (
+                            <div className="text-center py-12 bg-gray-800 rounded-xl border border-gray-700">
+                                <div className="text-6xl mb-4">🏠</div>
+                                <h3 className="text-xl font-bold text-white mb-2">No hay lobbies configurados</h3>
+                                <p className="text-gray-400 mb-4">Agrega tu primer lobby para que los jugadores puedan conectarse</p>
+                                <button
+                                    onClick={() => {
+                                        setLobbiesConfig([{ name: 'Lobby Principal', type: 'open', showMatches: true, checkRosterHash: true }])
+                                    }}
+                                    className="bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-6 rounded-lg inline-flex items-center gap-2"
+                                >
+                                    <span>➕</span> Crear Primer Lobby
+                                </button>
+                            </div>
+                        )}
                     </div>
                 )}
 
@@ -993,6 +1157,46 @@ function Admin() {
                                         <div className="text-gray-400 text-sm">Permite a los jugadores guardar sus configuraciones</div>
                                     </div>
                                 </label>
+                            </div>
+
+                            <div className="border-t border-gray-700 pt-6 mt-6">
+                                <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                                    <span>👋</span> Mensaje de Bienvenida
+                                </h3>
+                                <div className="grid grid-cols-1 gap-6">
+                                    <div>
+                                        <label className="block text-gray-400 text-sm mb-2">Nombre del Servidor</label>
+                                        <input
+                                            type="text"
+                                            value={serverName}
+                                            onChange={e => setServerName(e.target.value)}
+                                            className="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-2 text-white focus:border-orange-500 outline-none"
+                                            placeholder="Ej: Fiveserver"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-gray-400 text-sm mb-2">Mensaje de Bienvenida</label>
+                                        <textarea
+                                            rows={4}
+                                            value={greetingText}
+                                            onChange={e => setGreetingText(e.target.value)}
+                                            className="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-2 text-white focus:border-orange-500 outline-none resize-none"
+                                            placeholder="Ej: Bienvenido al servidor..."
+                                        />
+                                        <p className="text-xs text-gray-500 mt-1">
+                                            Usa \n para saltos de línea.
+                                        </p>
+                                    </div>
+                                    <div className="flex justify-end">
+                                        <button
+                                            onClick={handleSaveGreeting}
+                                            disabled={isSavingGreeting}
+                                            className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-6 rounded-lg flex items-center gap-2 disabled:opacity-50 transition-colors"
+                                        >
+                                            {isSavingGreeting ? 'Guardando...' : 'Guardar Mensaje'}
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
 
                             <div className="pt-4 border-t border-gray-700">

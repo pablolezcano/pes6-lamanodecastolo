@@ -132,6 +132,7 @@ class AdminRootResource(BaseXmlResource):
         BaseXmlResource.__init__(self, adminConfig, config, authenticated)
         self.putChild(b'announcements', AnnouncementsResource(adminConfig, config, authenticated))
         self.putChild(b'lobbies', LobbiesResource(adminConfig, config, authenticated))
+        self.putChild(b'greeting', ServerGreetingResource(adminConfig, config, authenticated))
 
     def render_GET(self, request):
         request.setHeader('Content-Type','text/xml')
@@ -1348,40 +1349,54 @@ class UserAccountResource(resource.Resource):
                 _sendResponse(response)
                 return
 
-            # Process all profiles (basic info)
+            # Prepare deferred list for fetching stats for ALL profiles
+            deferreds = []
+
             for p in profiles:
-                response['profiles'].append({
+                p_dict = {
                     'name': util.toUnicode(p.name),
                     'id': p.id,
                     'rank': p.rank,
                     'points': p.points,
                     'rating': p.rating,
                     'disconnects': p.disconnects,
-                    'seconds_played': int(p.playTime.total_seconds())
-                })
+                    'seconds_played': int(p.playTime.total_seconds()),
+                    'stats': {},
+                    'streaks': {}
+                }
+                response['profiles'].append(p_dict)
+                
+                # Fetch stats for this profile
+                d = _getProfileStats(p.id, p_dict)
+                deferreds.append(d)
             
-            # Get detailed stats only for the first profile (for now)
-            main_profile = profiles[0]
-            response['profile'] = response['profiles'][0]
+            # Wait for all stats to be fetched
+            dl = defer.DeferredList(deferreds)
+            dl.addCallback(lambda _: _sendResponse(response))
+            dl.addErrback(self.renderError, request)
+
+        def _getProfileStats(profile_id, profile_dict):
+            # 1. Get Streaks
+            d_streaks = _getStreaks(profile_id)
             
-            # Chain deferreds to get streaks and match stats
-            d_streaks = _getStreaks(main_profile.id)
-            d_streaks.addCallback(_gotStreaks, main_profile.id, response)
-            d_streaks.addErrback(self.renderError, request)
+            def _handleStreaks(rows):
+                streaks = {'current': 0, 'best': 0}
+                if rows:
+                    streaks['current'] = rows[0][0]
+                    streaks['best'] = rows[0][1]
+                profile_dict['streaks'] = streaks
+                
+                # 2. Get Match Stats (chained)
+                return _getMatchStats(profile_id, profile_dict)
+                
+            d_streaks.addCallback(_handleStreaks)
+            return d_streaks
 
         def _getStreaks(profile_id):
             sql = 'SELECT wins, best FROM streaks WHERE profile_id = %s'
             return self.config.matchData.dbController.dbRead(0, sql, profile_id)
 
-        def _gotStreaks(rows, profile_id, response):
-            streaks = {'current': 0, 'best': 0}
-            if rows:
-                streaks['current'] = rows[0][0]
-                streaks['best'] = rows[0][1]
-            
-            response['streaks'] = streaks
-            
-            # Now get match stats
+        def _getMatchStats(profile_id, profile_dict):
             sql = """
                 SELECT 
                     COUNT(*) as played,
@@ -1403,27 +1418,28 @@ class UserAccountResource(resource.Resource):
                 JOIN matches m ON mp.match_id = m.id
                 WHERE mp.profile_id = %s
             """
-            d_stats = self.config.matchData.dbController.dbRead(0, sql, profile_id)
-            d_stats.addCallback(_gotMatchStats, response)
-            return d_stats
-
-        def _gotMatchStats(rows, response):
-            stats = {
-                'played': 0, 'won': 0, 'drawn': 0, 'lost': 0,
-                'goals_for': 0, 'goals_against': 0
-            }
+            d = self.config.matchData.dbController.dbRead(0, sql, profile_id)
             
-            if rows and rows[0][0] > 0:
-                row = rows[0]
-                stats['played'] = int(row[0] or 0)
-                stats['won'] = int(row[1] or 0)
-                stats['drawn'] = int(row[2] or 0)
-                stats['lost'] = int(row[3] or 0)
-                stats['goals_for'] = int(row[4] or 0)
-                stats['goals_against'] = int(row[5] or 0)
-            
-            response['stats'] = stats
-            _sendResponse(response)
+            def _handleStats(rows):
+                stats = {
+                    'played': 0, 'won': 0, 'drawn': 0, 'lost': 0,
+                    'goals_for': 0, 'goals_against': 0
+                }
+                
+                if rows and rows[0][0] > 0:
+                    row = rows[0]
+                    stats['played'] = int(row[0] or 0)
+                    stats['won'] = int(row[1] or 0)
+                    stats['drawn'] = int(row[2] or 0)
+                    stats['lost'] = int(row[3] or 0)
+                    stats['goals_for'] = int(row[4] or 0)
+                    stats['goals_against'] = int(row[5] or 0)
+                
+                profile_dict['stats'] = stats
+                return True # Signal completion
+                
+            d.addCallback(_handleStats)
+            return d
 
         def _sendResponse(response):
             request.setHeader('Content-Type', 'application/json')
@@ -1559,16 +1575,68 @@ class LobbiesResource(BaseXmlResource):
             # Save to file
             self.config.serverConfig.save()
             
-            # Note: This requires server restart to apply fully, 
-            # but we save it for persistence.
-            # Ideally we would trigger a reload here.
+            # Reload lobbies in memory
+            self.config.reloadLobbies()
             
-            return json.dumps({'success': True, 'message': 'Configuration saved. Restart required to apply changes.'}).encode('utf-8')
+            return json.dumps({'success': True, 'message': 'Configuration saved and lobbies reloaded.'}).encode('utf-8')
         except Exception as e:
             log.msg('Error saving lobbies: %s' % str(e))
             request.setResponseCode(500)
             return json.dumps({'error': str(e)}).encode('utf-8')
 
+
+
+class ServerGreetingResource(BaseXmlResource):
+    """Resource to manage server name and greeting message"""
+    
+    def render_GET(self, request):
+        request.setHeader('Content-Type', 'application/json')
+        try:
+            server_name = getattr(self.config.serverConfig, 'ServerName', 'Fiveserver')
+            greeting_text = ''
+            if hasattr(self.config.serverConfig, 'Greeting'):
+                greeting_text = self.config.serverConfig.Greeting.get('text', '')
+            
+            return json.dumps({
+                'serverName': server_name,
+                'greetingText': greeting_text
+            }).encode('utf-8')
+        except Exception as e:
+            log.msg('Error reading greeting: %s' % str(e))
+            request.setResponseCode(500)
+            return json.dumps({'error': str(e)}).encode('utf-8')
+    
+    def render_POST(self, request):
+        request.setHeader('Content-Type', 'application/json')
+        try:
+            content = request.content.read()
+            data = json.loads(content)
+            
+            log.msg('Received greeting update: %s' % str(data))
+            
+            # Update server name
+            if 'serverName' in data:
+                self.config.serverConfig.ServerName = data['serverName']
+            
+            # Update greeting text
+            if 'greetingText' in data:
+                if not hasattr(self.config.serverConfig, 'Greeting') or not isinstance(self.config.serverConfig.Greeting, dict):
+                    self.config.serverConfig.Greeting = {}
+                self.config.serverConfig.Greeting['text'] = data['greetingText']
+            
+            # Save to file
+            log.msg('Saving configuration...')
+            self.config.serverConfig.save()
+            log.msg('Configuration saved successfully.')
+            
+            return json.dumps({
+                'success': True, 
+                'message': 'Server name and greeting updated successfully. Restart required for full effect.'
+            }).encode('utf-8')
+        except Exception as e:
+            log.msg('Error saving greeting: %s' % str(e))
+            request.setResponseCode(500)
+            return json.dumps({'error': str(e)}).encode('utf-8')
 
 
 class MatchHistoryResource(BaseXmlResource):

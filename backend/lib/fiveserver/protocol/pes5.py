@@ -60,12 +60,27 @@ class NewsProtocol(PacketDispatcher):
             # check server capacity
             if not self.factory.configuration.atCapacity():
                 # greetings message
+                greeting_title = self.GREETING['title']
+                greeting_text = self.GREETING['text']
+
+                # Try to get from config
+                if hasattr(self.factory.serverConfig, 'Greeting'):
+                    cfg_greeting = self.factory.serverConfig.Greeting
+                    if cfg_greeting:
+                        # Handle title (server name)
+                        if hasattr(self.factory.serverConfig, 'ServerName'):
+                            greeting_title = 'SYSTEM: ' + self.factory.serverConfig.ServerName + ' v%s'
+                        
+                        # Handle text
+                        if 'text' in cfg_greeting:
+                            greeting_text = cfg_greeting['text']
+
                 data = b'\0'*4 + b'\x01\x01'
                 data += util.padWithZeros(str(datetime.utcnow()), 19)
                 data += util.padWithZeros(
-                    self.GREETING['title'] % self.factory.VERSION, 64)
+                    greeting_title % self.factory.VERSION, 64)
                 data += util.stripZeros(util.padWithZeros(
-                    self.GREETING['text'], 512))
+                    greeting_text, 512))
                 self.sendData(0x200a,data)
                 # whatsnew message (if applicable)
                 announcement = self.NEW_FEATURES.get(self.factory.VERSION)
@@ -110,8 +125,12 @@ class NewsProtocol(PacketDispatcher):
                 gameName = name
                 break
         serverIP = self.factory.configuration.serverIP_wan
+        server_name = self.SERVER_NAME
+        if hasattr(self.factory.serverConfig, 'ServerName'):
+            server_name = self.factory.serverConfig.ServerName
+
         servers = [
-            (-1,2,self.SERVER_NAME,serverIP,
+            (-1,2,server_name,serverIP,
              self.factory.serverConfig.NetworkServer['mainService'],
              max(0, self.factory.getNumUsersOnline()-1),2),
             (-1,3,'NETWORK_MENU',serverIP,

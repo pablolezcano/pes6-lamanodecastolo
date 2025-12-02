@@ -1,0 +1,25 @@
+name: 01-Sync with On-Premise Server
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  sync:
+    runs-on: ubuntu-18.04
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan 181.230.13.38 >> ~/.ssh/known_hosts
+
+      - name: Sync with server
+        run: |
+          ssh messi@181.230.13.38 "cd /test-pes/ && git pull origin main"

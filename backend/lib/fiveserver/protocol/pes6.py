@@ -79,11 +79,15 @@ class NewsProtocol(pes5.NewsProtocol):
                 gameName = name
                 break
         serverIP = self.factory.configuration.serverIP_wan
+        server_name = self.SERVER_NAME
+        if hasattr(self.factory.serverConfig, 'ServerName'):
+            server_name = self.factory.serverConfig.ServerName
+
         servers = [
             (-1,2,'LOGIN',serverIP,
              self.factory.serverConfig.NetworkServer['loginService'][gameName],
              0,2),
-            (-1,3,self.SERVER_NAME,serverIP,
+            (-1,3,server_name,serverIP,
              self.factory.serverConfig.NetworkServer['mainService'],
              max(0, self.factory.getNumUsersOnline()-1),3),
             (-1,8,'NETWORK_MENU',serverIP,
