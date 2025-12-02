@@ -1,0 +1,90 @@
+version: '3.8'
+
+services:
+  gateway:
+    build: ./gateway
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      - DOMAIN_NAME=${DOMAIN_NAME}
+    volumes:
+      - ./gateway/nginx.prod.conf.template:/etc/nginx/nginx.prod.conf.template
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+    command: /bin/sh -c "envsubst '\$DOMAIN_NAME' < /etc/nginx/nginx.prod.conf.template > /etc/nginx/nginx.conf && exec nginx -g 'daemon off;'"
+    depends_on:
+      - frontend
+      - server
+    networks:
+      - pes6-net
+
+  certbot:
+    image: certbot/certbot
+    volumes:
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+    networks:
+      - pes6-net
+
+  frontend:
+    build: ./frontend
+    expose:
+      - "80"
+    networks:
+      - pes6-net
+
+  db:
+    build:
+      context: ./backend/sql
+      dockerfile: Dockerfile
+    image: pes6-db
+    container_name: pes6-mysql
+    restart: always
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    expose:
+      - "3306"
+    volumes:
+      - ./mysql_data:/var/lib/mysql
+    networks:
+      - pes6-net
+
+  server:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    image: fiveserver
+    container_name: sixserver
+    restart: always
+    depends_on:
+      - db
+    environment:
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - SERVER_NAME=${SERVER_NAME}
+      - SERVER_IP=${SERVER_IP}
+      - CIPHER_KEY=${CIPHER_KEY}
+      - ADMIN_USER=${ADMIN_USER}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD}
+      - FSROOT=/opt/fiveserver
+    expose:
+      - "8190"
+      - "8191"
+      - "8192"
+    ports:
+      # Game ports must remain public
+      - "10881:10881"
+      - "20200-20203:20200-20203"
+    volumes:
+      - ./backend/etc/data:/opt/fiveserver/etc/data
+    networks:
+      - pes6-net
+
+networks:
+  pes6-net:
+    driver: bridge

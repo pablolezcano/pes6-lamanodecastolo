@@ -3,8 +3,11 @@ import binascii
 from Crypto.Cipher import Blowfish
 import sys
 
+import os
+
 # Config
-CIPHER_KEY_HEX = ('27501fd04e6b82c831024dac5c6305221974deb9388a2190'
+CIPHER_KEY_HEX = os.environ.get('CIPHER_KEY', 
+                  '27501fd04e6b82c831024dac5c6305221974deb9388a2190'
                   '1d576cbbe2f377ef23d75486010f37819afe6c321a0146d2'
                   '1544ec365bf7289a')
 CIPHER_KEY = binascii.a2b_hex(CIPHER_KEY_HEX)

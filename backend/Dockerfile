@@ -26,7 +26,7 @@ COPY tac $FSROOT/tac
 
 COPY web6 $FSROOT/web6
 
-COPY service.sh $FSROOT/
+COPY service.sh update_config.py $FSROOT/
 
 RUN chown -R five:five $FSROOT/log
 RUN chown -R five:five $FSROOT/etc/data

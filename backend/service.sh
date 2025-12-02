@@ -15,10 +15,12 @@ PID=${fsroot}/log/sixserver.pid
 
 case "$1" in
     run)
+        ${FSENV}/bin/python3 ${fsroot}/update_config.py
         ${FSENV}/bin/twistd -noy $TAC
         ;;
     runexec)
         rm -f $PID
+        ${FSENV}/bin/python3 ${fsroot}/update_config.py
         exec ${FSENV}/bin/twistd -noy $TAC --logfile $LOG --pidfile $PID
         ;;
     start)
