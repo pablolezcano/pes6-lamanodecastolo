@@ -28,8 +28,8 @@ services:
     environment:
       MYSQL_DATABASE: sixserver
       MYSQL_USER: sixserver
-      MYSQL_PASSWORD: proevo
-      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
     expose:
       - "3306"
     volumes:

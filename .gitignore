@@ -6,3 +6,10 @@ images/
 
 mysql_data/
 backup.sql
+
+# --- ARCHIVOS SENSIBLES (NO SUBIR) ---
+.env
+backend/etc/conf/sixserver.yaml
+backend/etc/keys/
+letsencrypt/
+certbot/

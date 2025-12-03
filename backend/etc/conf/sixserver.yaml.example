@@ -5,7 +5,7 @@ Comment: |
     NOTE that GamePorts should not be changed, because the corresponding
     games have those values hardcoded into them.
 
-ServerIP: 192.168.0.4
+ServerIP: IPDELSERVIDOR
 ListenOn: ""
 IpDetectUri: "http://mapote.com/cgi-bin/ip.py"
 
@@ -43,7 +43,7 @@ Debug:
 DB:
     name: sixserver
     user: sixserver
-    password: proevo
+    password: CONTRASENA DE LA DB
     readServers: [pes6-mysql]
     writeServers: [pes6-mysql]
     sharePool: True
