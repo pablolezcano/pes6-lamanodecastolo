@@ -1,4 +1,4 @@
-import { Download, Monitor, HardDrive, FileText, ArrowRight } from 'lucide-react';
+import { Download, Monitor, HardDrive, FileText } from 'lucide-react';
 
 const DOWNLOADS = [
     {
