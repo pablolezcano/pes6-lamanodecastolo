@@ -1,0 +1,35 @@
+name: Deploy PES6 Server
+
+on:
+  push:
+    branches:
+      - main  # Se activa cuando haces push a la rama 'main'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Deploy to VPS
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USERNAME }}
+        key: ${{ secrets.KEY }}
+        port: 22
+        script: |
+          # Ir a la carpeta del proyecto
+          cd /etc/lamanodecastolo/pes6-lamanodecastolo
+          
+          # Asegurarse de que no haya cambios locales que bloqueen la actualización
+          git checkout .
+          
+          # Descargar el código nuevo desde GitHub
+          git pull origin main
+          
+          # Reconstruir y levantar los contenedores en modo producción
+          # (Docker detectará qué cambió y solo reconstruirá lo necesario)
+          docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
+          
+          # Limpiar imágenes viejas para no llenar el disco del VPS
+          docker image prune -f
