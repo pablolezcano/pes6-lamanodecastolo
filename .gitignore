@@ -6,6 +6,7 @@ images/
 
 mysql_data/
 backup.sql
+node_modules
 
 # --- ARCHIVOS SENSIBLES (NO SUBIR) ---
 .env

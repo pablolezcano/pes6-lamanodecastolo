@@ -23,7 +23,7 @@ function Header() {
                     <div className="flex items-center">
                         <Link to="/" className="flex items-center gap-2">
                             <span className="text-3xl">⚽</span>
-                            <span className="text-white font-bold text-xl">PES6 Server</span>
+                            <span className="text-white font-bold text-xl">La mano de Castolo</span>
                         </Link>
                     </div>
 

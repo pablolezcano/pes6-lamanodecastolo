@@ -31,7 +31,6 @@ function App() {
           <Route path="/server" element={<Layout><ServerStats /></Layout>} />
           <Route path="/history" element={<Layout><MatchHistory /></Layout>} />
           <Route path="/account" element={<Layout><Account /></Layout>} />
-          <Route path="/auth" element={<Layout><Auth /></Layout>} />
 
           {/* Auth routes without Layout (full page) */}
           <Route path="/login" element={<Login />} />
