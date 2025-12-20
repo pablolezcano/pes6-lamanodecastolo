@@ -144,6 +144,9 @@ function Admin() {
                 setProcessInfo(psRes.data)
                 setAnnouncements(announcementsRes.data)
 
+                // Debug: ver qué llega del backend
+                console.log('Lobbies raw data:', lobbiesRes.data)
+
                 // Normalizar lobbies: convertir strings a objetos
                 const normalizedLobbies = (lobbiesRes.data || []).map((lobby: any) => {
                     if (typeof lobby === 'string') {
@@ -163,6 +166,8 @@ function Admin() {
                         checkRosterHash: lobby.checkRosterHash !== false
                     }
                 })
+
+                console.log('Lobbies normalized:', normalizedLobbies)
                 setLobbiesConfig(normalizedLobbies)
 
                 setServerName(greetingRes.data.serverName || '')
