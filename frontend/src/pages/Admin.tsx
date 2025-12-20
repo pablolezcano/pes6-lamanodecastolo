@@ -143,7 +143,28 @@ function Admin() {
                 setBannedList(bannedRes.data)
                 setProcessInfo(psRes.data)
                 setAnnouncements(announcementsRes.data)
-                setLobbiesConfig(lobbiesRes.data)
+
+                // Normalizar lobbies: convertir strings a objetos
+                const normalizedLobbies = (lobbiesRes.data || []).map((lobby: any) => {
+                    if (typeof lobby === 'string') {
+                        // Convertir string a objeto
+                        return {
+                            name: lobby,
+                            type: 'open',
+                            showMatches: true,
+                            checkRosterHash: true
+                        }
+                    }
+                    // Ya es un objeto, asegurar que tenga todas las propiedades
+                    return {
+                        name: lobby.name || 'Unnamed Lobby',
+                        type: lobby.type || 'open',
+                        showMatches: lobby.showMatches !== false,
+                        checkRosterHash: lobby.checkRosterHash !== false
+                    }
+                })
+                setLobbiesConfig(normalizedLobbies)
+
                 setServerName(greetingRes.data.serverName || '')
                 setGreetingText(greetingRes.data.greetingText || '')
 
