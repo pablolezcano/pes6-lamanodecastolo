@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import axios from 'axios'
 import { useAuth } from '../context/AuthContext'
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
+
 
 interface ServerStats {
     server: {
@@ -511,54 +511,9 @@ function Admin() {
                             </div>
                         </div>
 
-                        {/* GRÁFICOS Y ALERTAS */}
-                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-                            {/* Gráfico de Actividad */}
-                            <div className="lg:col-span-2 bg-gray-800 rounded-xl p-6 border border-gray-700 shadow-lg">
-                                <h3 className="text-white font-bold mb-6 flex items-center gap-2">
-                                    <span>📈</span> Actividad de Jugadores (24h)
-                                </h3>
-                                <div className="h-[300px]">
-                                    <ResponsiveContainer width="100%" height="100%">
-                                        <LineChart data={[
-                                            { time: '00:00', users: Math.floor(Math.random() * 20) + 5 },
-                                            { time: '04:00', users: Math.floor(Math.random() * 10) + 2 },
-                                            { time: '08:00', users: Math.floor(Math.random() * 30) + 10 },
-                                            { time: '12:00', users: Math.floor(Math.random() * 80) + 40 },
-                                            { time: '16:00', users: Math.floor(Math.random() * 120) + 60 },
-                                            { time: '20:00', users: Math.floor(Math.random() * 150) + 80 },
-                                            { time: '23:59', users: Math.floor(Math.random() * 100) + 50 }
-                                        ]}>
-                                            <defs>
-                                                <linearGradient id="colorUsers" x1="0" y1="0" x2="0" y2="1">
-                                                    <stop offset="5%" stopColor="#F97316" stopOpacity={0.8} />
-                                                    <stop offset="95%" stopColor="#F97316" stopOpacity={0} />
-                                                </linearGradient>
-                                            </defs>
-                                            <CartesianGrid strokeDasharray="3 3" stroke="#374151" vertical={false} />
-                                            <XAxis dataKey="time" stroke="#9CA3AF" axisLine={false} tickLine={false} />
-                                            <YAxis stroke="#9CA3AF" axisLine={false} tickLine={false} />
-                                            <Tooltip
-                                                contentStyle={{ backgroundColor: '#1F2937', border: '1px solid #374151', borderRadius: '0.5rem', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' }}
-                                                itemStyle={{ color: '#F97316' }}
-                                                cursor={{ stroke: '#4B5563', strokeWidth: 1 }}
-                                            />
-                                            <Line
-                                                type="monotone"
-                                                dataKey="users"
-                                                stroke="#F97316"
-                                                strokeWidth={3}
-                                                dot={{ r: 4, fill: '#1F2937', strokeWidth: 2 }}
-                                                activeDot={{ r: 6, fill: '#F97316' }}
-                                                fill="url(#colorUsers)"
-                                            />
-                                        </LineChart>
-                                    </ResponsiveContainer>
-                                </div>
-                            </div>
-
-                            {/* Panel de Alertas Dinámicas */}
-                            <div className="bg-gray-800 rounded-xl p-6 border border-gray-700 shadow-lg flex flex-col">
+                        {/* PANEL DE ALERTAS */}
+                        <div className="mb-8">
+                            <div className="bg-gray-800 rounded-xl p-6 border border-gray-700 shadow-lg">
                                 <div className="flex items-center justify-between mb-6">
                                     <h3 className="text-white font-bold flex items-center gap-2">
                                         <span>🔔</span> Alertas del Sistema
@@ -567,14 +522,14 @@ function Admin() {
                                         {logs.filter(l => l.includes('ERROR') || l.includes('WARN')).length} Activas
                                     </span>
                                 </div>
-                                <div className="space-y-4 flex-1 overflow-y-auto max-h-[300px] pr-2 custom-scrollbar">
+                                <div className="space-y-4 overflow-y-auto max-h-[300px] pr-2 custom-scrollbar">
                                     {logs.filter(l => l.includes('ERROR') || l.includes('WARN')).length === 0 ? (
                                         <div className="text-center text-gray-500 py-8">
                                             <div className="text-4xl mb-2">✅</div>
                                             <p>Todo funciona correctamente</p>
                                         </div>
                                     ) : (
-                                        logs.filter(l => l.includes('ERROR') || l.includes('WARN')).slice(0, 5).map((log, idx) => {
+                                        logs.filter(l => l.includes('ERROR') || l.includes('WARN')).slice(0, 10).map((log, idx) => {
                                             const isError = log.includes('ERROR');
                                             return (
                                                 <div key={idx} className={`${isError ? 'bg-red-500/10 border-red-500' : 'bg-yellow-500/10 border-yellow-500'} border-l-4 p-3 rounded-r-lg transition-all hover:translate-x-1`}>

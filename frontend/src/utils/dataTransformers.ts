@@ -61,7 +61,7 @@ export interface Lobby {
     status: 'waiting' | 'in-game'
     players: number
     maxPlayers: number
-    ping: number
+    ping?: number
 }
 
 // Función para parsear el score "2-1" a {home: 2, away: 1}
@@ -90,58 +90,9 @@ function detectRegion(lobbyName: string): 'AR' | 'BR' | 'CL' | 'General' {
     return 'General'
 }
 
-// Generar eventos mock basados en el score (temporal hasta tener datos reales)
-function generateMockEvents(score: { home: number; away: number }, minute: number): MatchEvent[] {
-    const events: MatchEvent[] = []
-    const totalGoals = score.home + score.away
-
-    // Distribuir goles a lo largo del partido
-    for (let i = 0; i < totalGoals; i++) {
-        const isHome = i < score.home
-        const eventMinute = Math.floor((minute / totalGoals) * (i + 1))
-
-        events.push({
-            minute: eventMinute,
-            type: 'goal',
-            team: isHome ? 'home' : 'away',
-            player: isHome ? 'Jugador Local' : 'Jugador Visitante',
-            description: `Gol ${isHome ? 'local' : 'visitante'}`
-        })
-    }
-
-    return events.sort((a, b) => a.minute - b.minute)
-}
-
-// Generar stats mock (temporal hasta tener datos reales)
-function generateMockStats(score: { home: number; away: number }): MatchStats {
-    const homeAdvantage = score.home > score.away ? 10 : score.home < score.away ? -10 : 0
-
-    return {
-        possession: {
-            home: 50 + homeAdvantage,
-            away: 50 - homeAdvantage
-        },
-        shots: {
-            home: score.home * 3 + Math.floor(Math.random() * 3),
-            away: score.away * 3 + Math.floor(Math.random() * 3)
-        },
-        fouls: {
-            home: Math.floor(Math.random() * 10) + 5,
-            away: Math.floor(Math.random() * 10) + 5
-        },
-        corners: {
-            home: Math.floor(Math.random() * 8) + 2,
-            away: Math.floor(Math.random() * 8) + 2
-        },
-        offsides: {
-            home: Math.floor(Math.random() * 5),
-            away: Math.floor(Math.random() * 5)
-        }
-    }
-}
-
 /**
  * Transforma datos de /api/stats a formato Match[]
+ * Nota: events y stats están vacíos porque el backend no provee estos datos actualmente
  */
 export function transformStatsToMatches(stats: StatsResponse): Match[] {
     const matches: Match[] = []
@@ -172,8 +123,15 @@ export function transformStatsToMatches(stats: StatsResponse): Match[] {
                     minute,
                     roomName: match.roomName,
                     lobbyName: lobby.name,
-                    events: generateMockEvents(score, minute),
-                    stats: generateMockStats(score)
+                    // Backend no provee eventos ni estadísticas detalladas aún
+                    events: [],
+                    stats: {
+                        possession: { home: 0, away: 0 },
+                        shots: { home: 0, away: 0 },
+                        fouls: { home: 0, away: 0 },
+                        corners: { home: 0, away: 0 },
+                        offsides: { home: 0, away: 0 }
+                    }
                 })
             })
         }
@@ -193,6 +151,6 @@ export function transformStatsToLobbies(stats: StatsResponse): Lobby[] {
         status: lobby.matchesInProgress > 0 ? 'in-game' : 'waiting',
         players: lobby.playerCount,
         maxPlayers: 16, // Valor por defecto, ajustar según configuración real
-        ping: Math.floor(Math.random() * 80) + 20 // Mock ping, calcular real en el futuro
+        // ping no está disponible desde el backend
     }))
 }
