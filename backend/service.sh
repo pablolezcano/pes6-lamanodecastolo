@@ -15,21 +15,11 @@ PID=${fsroot}/log/sixserver.pid
 
 case "$1" in
     run)
-        # Ensure sixserver.yaml exists (copy from example if needed)
-        if [ ! -f ${fsroot}/etc/conf/sixserver.yaml ]; then
-            echo "Creating sixserver.yaml from example..."
-            cp ${fsroot}/etc/conf/sixserver.yaml.example ${fsroot}/etc/conf/sixserver.yaml
-        fi
         ${FSENV}/bin/python3 ${fsroot}/update_config.py
         ${FSENV}/bin/twistd -noy $TAC
         ;;
     runexec)
         rm -f $PID
-        # Ensure sixserver.yaml exists (copy from example if needed)
-        if [ ! -f ${fsroot}/etc/conf/sixserver.yaml ]; then
-            echo "Creating sixserver.yaml from example..."
-            cp ${fsroot}/etc/conf/sixserver.yaml.example ${fsroot}/etc/conf/sixserver.yaml
-        fi
         ${FSENV}/bin/python3 ${fsroot}/update_config.py
         exec ${FSENV}/bin/twistd -noy $TAC --logfile $LOG --pidfile $PID
         ;;
