@@ -1,9 +1,5 @@
 import { useState } from 'react'
-
-// Declaración global para md5.js
-declare global {
-    function hex_md5(s: string): string
-}
+import md5 from 'js-md5'
 
 interface RegisterFormProps {
     onSuccess?: () => void
@@ -23,12 +19,7 @@ function RegisterForm({ onSuccess }: RegisterFormProps) {
         setError('')
         setLoading(true)
 
-        // Check if hex_md5 is available
-        if (typeof hex_md5 !== 'function') {
-            setError('Error: md5.js no se cargó correctamente. Recarga la página.')
-            setLoading(false)
-            return
-        }
+
 
         // Validaciones
         let cleanSerial = serial.replace(/^\s+/, '').replace(/\s+$/, '').replace(/-/g, '').toUpperCase()
@@ -65,7 +56,7 @@ function RegisterForm({ onSuccess }: RegisterFormProps) {
 
         try {
             // Calculate hash
-            const hash = hex_md5(cleanSerial + cleanUsername + '-' + password)
+            const hash = md5(cleanSerial + cleanUsername + '-' + password)
 
             // Get nonce from backend or generate one
             let nonce = ''
