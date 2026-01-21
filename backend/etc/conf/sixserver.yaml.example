@@ -7,6 +7,7 @@ Comment: |
 
 ServerIP: IPDELSERVIDOR
 ListenOn: ""
+cipherKey: ""
 IpDetectUri: "http://mapote.com/cgi-bin/ip.py"
 
 Lobbies:

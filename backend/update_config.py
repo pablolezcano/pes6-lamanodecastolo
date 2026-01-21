@@ -50,6 +50,7 @@ def main():
         'DB.name': os.environ.get('MYSQL_DATABASE'),
         'ServerName': os.environ.get('SERVER_NAME'),
         'ServerIP': os.environ.get('SERVER_IP'),
+        'cipherKey': os.environ.get('CIPHER_KEY'),
     }
     update_yaml(sixserver_path, sixserver_updates)
 
