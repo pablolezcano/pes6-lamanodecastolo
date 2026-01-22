@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import md5 from 'js-md5'
+import { md5 } from 'js-md5'
 
 interface RegisterFormProps {
     onSuccess?: () => void
