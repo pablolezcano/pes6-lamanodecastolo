@@ -254,6 +254,7 @@ class LoginService(PacketDispatcher):
         except errors.UnknownUserError as info:
             # authentication error
             log.msg('UnknownUserError: %s' % info)
+            log.msg('DEBUG AUTH FAILED - Received Hash from Client: {%s}' % str(userHash))
             self.sendData(0x3004,struct.pack('!I',0xffffff10))
         defer.returnValue(None)
 
