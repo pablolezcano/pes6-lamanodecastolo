@@ -55,10 +55,10 @@ function Register() {
             return
         }
 
-        // Pad serial to 36 chars (as per original implementation)
-        while (cleanSerial.length < 36) {
-            cleanSerial += '\0'
-        }
+        // Serial padding removed as it causes hash mismatch with standard game client
+        // while (cleanSerial.length < 36) {
+        //    cleanSerial += '\0'
+        // }
 
         // Calculate hash: md5(serial + username + '-' + password)
         const hashValue = md5(cleanSerial + username + '-' + password)
