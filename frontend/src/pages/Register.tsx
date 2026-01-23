@@ -1,5 +1,6 @@
 import { useState, useRef } from 'react'
 import { Link } from 'react-router-dom'
+import { md5 } from 'js-md5'
 
 function Register() {
     const [username, setUsername] = useState('')
@@ -8,24 +9,6 @@ function Register() {
     const [confirmPassword, setConfirmPassword] = useState('')
     const [error, setError] = useState('')
     const formRef = useRef<HTMLFormElement>(null)
-
-    // MD5 hash function (simplified - matches backend expectation)
-    const md5 = (str: string): string => {
-        // Using crypto-js would be better, but for simplicity using a basic implementation
-        // This is a placeholder - in production use proper MD5 library
-        let hash = 0
-        for (let i = 0; i < str.length; i++) {
-            const char = str.charCodeAt(i)
-            hash = ((hash << 5) - hash) + char
-            hash = hash & hash
-        }
-        // Convert to hex and pad to 32 chars
-        let hexHash = Math.abs(hash).toString(16)
-        while (hexHash.length < 32) {
-            hexHash += '0'
-        }
-        return hexHash.substring(0, 32)
-    }
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault()
@@ -55,13 +38,10 @@ function Register() {
             return
         }
 
-        // Serial padding removed as it causes hash mismatch with standard game client
-        // while (cleanSerial.length < 36) {
-        //    cleanSerial += '\0'
-        // }
-
-        // Calculate hash: md5(serial + username + '-' + password)
-        const hashValue = md5(cleanSerial + username + '-' + password)
+        // Calculate hash: md5(serial + password) - Matches standard PES6 client
+        // Note: The client does NOT include the username in the hash, and often does NOT use the dash
+        // We strictly follow: MD5(Serial + Password)
+        const hashValue = md5(cleanSerial + password)
 
         // Set hidden field and submit traditional form
         const hashField = document.getElementById('hash') as HTMLInputElement
@@ -69,7 +49,7 @@ function Register() {
 
         if (hashField && serialField) {
             hashField.value = hashValue
-            serialField.value = cleanSerial.substring(0, 20) // Remove padding for submission
+            serialField.value = cleanSerial.substring(0, 20)
             formRef.current?.submit()
         }
     }
