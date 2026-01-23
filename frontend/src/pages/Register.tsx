@@ -38,10 +38,10 @@ function Register() {
             return
         }
 
-        // Calculate hash: md5(serial + password) - Matches standard PES6 client
-        // Note: The client does NOT include the username in the hash, and often does NOT use the dash
-        // We strictly follow: MD5(Serial + Password)
-        const hashValue = md5(cleanSerial + password)
+        // Calculate hash: md5(cleanSerial + username + '-' + password)
+        // This matches the 'Juce' / Sixserver logic which allows logging in with "username-password"
+        // in the game's password field.
+        const hashValue = md5(cleanSerial + username + '-' + password)
 
         // Set hidden field and submit traditional form
         const hashField = document.getElementById('hash') as HTMLInputElement
