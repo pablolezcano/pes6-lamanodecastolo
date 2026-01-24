@@ -49,10 +49,11 @@ function RegisterForm({ onSuccess }: RegisterFormProps) {
             return
         }
 
-        // Pad serial with null bytes to 36 chars (like frontend JS)
-        while (cleanSerial.length < 36) {
-            cleanSerial += '\0'
-        }
+        // Serial padding removed as it causes hash mismatch with standard game client
+        // Old code:
+        // while (cleanSerial.length < 36) {
+        //    cleanSerial += '\0'
+        // }
 
         try {
             // Calculate hash
