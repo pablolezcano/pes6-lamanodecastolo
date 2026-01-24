@@ -68,7 +68,6 @@ services:
       - MYSQL_DATABASE=${MYSQL_DATABASE}
       - SERVER_NAME=${SERVER_NAME}
       - SERVER_IP=${SERVER_IP}
-      - CIPHER_KEY=${CIPHER_KEY}
       - ADMIN_USER=${ADMIN_USER}
       - ADMIN_PASSWORD=${ADMIN_PASSWORD}
       - FSROOT=/opt/fiveserver
