@@ -22,10 +22,9 @@ jobs:
           cd /etc/lamanodecastolo/pes6-lamanodecastolo
           
           # Asegurarse de que no haya cambios locales que bloqueen la actualización
-          git checkout .
-          
-          # Descargar el código nuevo desde GitHub
-          git pull origin main
+          # Sincronizar forsozamente con la rama main para evitar conflictos de merge
+          git fetch origin
+          git reset --hard origin/main
           
           # Reconstruir y levantar los contenedores en modo producción
           # (Docker detectará qué cambió y solo reconstruirá lo necesario)
