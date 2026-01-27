@@ -606,17 +606,34 @@ class StatsResource(BaseXmlResource):
                 lobby_dict['users'].append(user_data)
 
             # Chat History
+            # Chat History
             lobby_dict['chat'] = []
-            if lobby.chatHistory:
-                # Get last 10 messages
-                recent_chat = lobby.chatHistory[-10:]
-                for msg in recent_chat:
-                    chat_data = {
-                        'user': util.toUnicode(msg.fromProfile.name),
-                        'text': util.toUnicode(msg.text),
-                        'time': msg.timestamp.strftime("%H:%M")
-                    }
-                    lobby_dict['chat'].append(chat_data)
+            if getattr(lobby, 'chatHistory', None):
+                try:
+                    # Get last 10 messages
+                    recent_chat = lobby.chatHistory[-10:]
+                    for msg in recent_chat:
+                        if not msg: continue
+                        
+                        sender_name = 'Unknown'
+                        if getattr(msg, 'fromProfile', None):
+                            sender_name = msg.fromProfile.name
+                        
+                        # Handle timestamp safely
+                        time_str = "00:00"
+                        if getattr(msg, 'timestamp', None):
+                            try:
+                                time_str = msg.timestamp.strftime("%H:%M")
+                            except: pass
+
+                        chat_data = {
+                            'user': util.toUnicode(sender_name),
+                            'text': util.toUnicode(getattr(msg, 'text', '')),
+                            'time': time_str
+                        }
+                        lobby_dict['chat'].append(chat_data)
+                except Exception as e:
+                    log.msg("Error processing chat history for lobby %s: %s" % (lobby.name, str(e)))
 
             # Rooms (Waiting & Playing)
             lobby_dict['rooms'] = []
