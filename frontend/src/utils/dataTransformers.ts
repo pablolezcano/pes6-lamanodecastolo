@@ -21,7 +21,27 @@ interface StatsResponse {
             state?: string
             matchTime?: string
         }>
+        rooms?: Array<{
+            id: number
+            name: string
+            isPrivate: boolean
+            phase: number
+            status: string
+            players: string[]
+            owner: string | null
+        }>
     }>
+}
+
+export interface WaitingRoom {
+    id: string
+    name: string
+    lobbyName: string
+    players: string[]
+    maxPlayers: number
+    isPrivate: boolean
+    status: string
+    owner: string | null
 }
 
 export interface Match {
@@ -91,6 +111,32 @@ function detectRegion(lobbyName: string): 'AR' | 'BR' | 'CL' | 'General' {
 }
 
 /**
+ * Transforma datos de /api/stats a formato WaitingRoom[]
+ */
+export function transformStatsToWaitingRooms(stats: StatsResponse): WaitingRoom[] {
+    const rooms: WaitingRoom[] = []
+
+    stats.lobbies.forEach(lobby => {
+        if (lobby.rooms && lobby.rooms.length > 0) {
+            lobby.rooms.forEach(room => {
+                rooms.push({
+                    id: `${lobby.name}-${room.id}`,
+                    name: room.name,
+                    lobbyName: lobby.name, // "Russia", "England", etc.
+                    players: room.players,
+                    maxPlayers: 2, // Generalmente 1v1, ajustar si es 2v2
+                    isPrivate: room.isPrivate,
+                    status: room.status,
+                    owner: room.owner
+                })
+            })
+        }
+    })
+
+    return rooms
+}
+
+/**
  * Transforma datos de /api/stats a formato Match[]
  * Nota: events y stats están vacíos porque el backend no provee estos datos actualmente
  */
@@ -148,9 +194,10 @@ export function transformStatsToLobbies(stats: StatsResponse): Lobby[] {
         id: `lobby-${index}`,
         name: lobby.name,
         region: detectRegion(lobby.name),
-        status: lobby.matchesInProgress > 0 ? 'in-game' : 'waiting',
+        // Si hay rooms creadas o partidos, está "activo"
+        status: (lobby.playerCount > 0) ? 'in-game' : 'waiting',
         players: lobby.playerCount,
-        maxPlayers: 16, // Valor por defecto, ajustar según configuración real
+        maxPlayers: 100, // Ajustamos a algo más realista para el lobby general
         // ping no está disponible desde el backend
     }))
 }

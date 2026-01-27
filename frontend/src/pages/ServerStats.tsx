@@ -14,17 +14,11 @@ function ServerStats() {
 
     // Usar hooks reales en lugar de mock data
     const { matches } = useMatches()
-    const { lobbies } = useLobbies()
+    const { lobbies, waitingRooms } = useLobbies()
 
     const filteredLobbies = regionFilter === 'all'
         ? lobbies
         : lobbies.filter(lobby => lobby.region === regionFilter)
-
-
-
-
-
-
 
     return (
         <div className="min-h-screen bg-gray-900">
@@ -59,12 +53,13 @@ function ServerStats() {
                 {activeTab === 'live' ? (
                     /* Live Matches Section */
                     <div className="mb-12">
+                        {/* Partidos en Juego */}
                         <div className="flex items-center gap-3 mb-6">
                             <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
                             <h2 className="text-2xl font-bold text-white">Partidos en Vivo</h2>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
                             {matches.map((match) => (
                                 <div
                                     key={match.id}
@@ -117,9 +112,66 @@ function ServerStats() {
                         </div>
 
                         {matches.length === 0 && (
-                            <div className="text-center py-12 bg-gray-800 rounded-lg border border-gray-700">
+                            <div className="text-center py-12 bg-gray-800 rounded-lg border border-gray-700 mb-12">
                                 <div className="text-6xl mb-4">⚽</div>
                                 <div className="text-gray-400 text-lg">No hay partidos en curso</div>
+                            </div>
+                        )}
+
+                        {/* Salas en Espera */}
+                        <div className="flex items-center gap-3 mb-6">
+                            <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+                            <h2 className="text-2xl font-bold text-white">Partidas en Espera</h2>
+                            <span className="bg-green-500/20 text-green-400 px-3 py-1 rounded-full text-sm font-semibold">
+                                {waitingRooms.length} SALAS
+                            </span>
+                        </div>
+
+                        {waitingRooms.length > 0 ? (
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+                                {waitingRooms.map((room) => (
+                                    <div key={room.id} className="bg-gray-800 p-6 rounded-lg border border-gray-700 hover:border-green-500 transition-all hover:scale-[1.02]">
+                                        <div className="flex justify-between items-start mb-4">
+                                            <div>
+                                                <h3 className="text-lg font-bold text-white mb-1">{room.name}</h3>
+                                                <div className="text-sm text-gray-400 flex items-center gap-2">
+                                                    <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                                                    {room.status}
+                                                </div>
+                                            </div>
+                                            <div className="text-xs bg-gray-700 px-2 py-1 rounded text-gray-300">
+                                                {room.lobbyName}
+                                            </div>
+                                        </div>
+
+                                        <div className="space-y-3 mb-4">
+                                            <div className="flex items-center justify-between text-sm">
+                                                <span className="text-gray-400">Dueño:</span>
+                                                <span className="text-white font-medium">{room.owner}</span>
+                                            </div>
+                                            <div className="flex items-center justify-between text-sm">
+                                                <span className="text-gray-400">Jugadores:</span>
+                                                <span className="text-white font-medium">{room.players.length}/{room.maxPlayers}</span>
+                                            </div>
+                                            {/* Listado de jugadores */}
+                                            <div className="flex gap-1 flex-wrap mt-2">
+                                                {room.players.map(p => (
+                                                    <span key={p} className="text-xs bg-gray-900 border border-gray-600 px-2 py-0.5 rounded text-gray-300">
+                                                        {p}
+                                                    </span>
+                                                ))}
+                                            </div>
+                                        </div>
+
+                                        <button className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg transition-colors flex items-center justify-center gap-2">
+                                            UNIRSE AL JUEGO
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="text-center py-8 bg-gray-800/50 rounded-lg border border-gray-700/50 border-dashed mb-12">
+                                <p className="text-gray-500">No hay salas esperando jugadores actualmente.</p>
                             </div>
                         )}
                     </div>

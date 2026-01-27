@@ -1,10 +1,11 @@
 import { useState, useEffect, useCallback } from 'react'
 import axios from 'axios'
-import { transformStatsToLobbies, type Lobby } from '../utils/dataTransformers'
+import { transformStatsToLobbies, transformStatsToWaitingRooms, type Lobby, type WaitingRoom } from '../utils/dataTransformers'
 import { useWebSocket } from './useWebSocket'
 
 interface UseLobbiesReturn {
     lobbies: Lobby[]
+    waitingRooms: WaitingRoom[]
     loading: boolean
     error: string | null
     refetch: () => void
@@ -13,6 +14,7 @@ interface UseLobbiesReturn {
 
 export function useLobbies(): UseLobbiesReturn {
     const [lobbies, setLobbies] = useState<Lobby[]>([])
+    const [waitingRooms, setWaitingRooms] = useState<WaitingRoom[]>([])
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
 
@@ -24,7 +26,9 @@ export function useLobbies(): UseLobbiesReturn {
                 headers: { 'Accept': 'application/json' }
             })
             const transformedLobbies = transformStatsToLobbies(response.data)
+            const transformedRooms = transformStatsToWaitingRooms(response.data)
             setLobbies(transformedLobbies)
+            setWaitingRooms(transformedRooms)
         } catch (err) {
             console.error('Error fetching lobbies:', err)
             setError('Error al cargar los lobbies')
@@ -39,7 +43,9 @@ export function useLobbies(): UseLobbiesReturn {
         onMessage: (message) => {
             if (message.type === 'stats_update' && message.data) {
                 const transformedLobbies = transformStatsToLobbies(message.data)
+                const transformedRooms = transformStatsToWaitingRooms(message.data)
                 setLobbies(transformedLobbies)
+                setWaitingRooms(transformedRooms)
             }
         },
         onConnect: () => {
@@ -65,6 +71,7 @@ export function useLobbies(): UseLobbiesReturn {
 
     return {
         lobbies,
+        waitingRooms,
         loading,
         error,
         refetch: fetchLobbies,
