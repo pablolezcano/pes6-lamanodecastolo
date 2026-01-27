@@ -1,16 +1,39 @@
 name: Deploy PES6 Server
-
 on:
   push:
     branches:
-      - main  # Se activa cuando haces push a la rama 'main'
+      - main
 
 jobs:
-  deploy:
+  check-changes:
     runs-on: ubuntu-latest
-
+    outputs:
+      frontend: ${{ steps.filter.outputs.frontend }}
+      backend: ${{ steps.filter.outputs.backend }}
+      config: ${{ steps.filter.outputs.config }}
     steps:
-    - name: Deploy to VPS
+    - uses: actions/checkout@v4
+    - uses: dorny/paths-filter@v3
+      id: filter
+      with:
+        filters: |
+          frontend:
+            - 'frontend/**'
+            - 'gateway/**'
+          backend:
+            - 'backend/**'
+            - 'sql/**'
+          config:
+            - 'docker-compose*'
+            - 'init-letsencrypt.sh'
+            - '.github/**'
+
+  deploy-frontend:
+    needs: check-changes
+    if: ${{ needs.check-changes.outputs.frontend == 'true' || needs.check-changes.outputs.config == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+    - name: Deploy Frontend Only
       uses: appleboy/ssh-action@v1.0.3
       with:
         host: ${{ secrets.HOST }}
@@ -18,17 +41,37 @@ jobs:
         key: ${{ secrets.KEY }}
         port: 22
         script: |
-          # Ir a la carpeta del proyecto
           cd /etc/lamanodecastolo/pes6-lamanodecastolo
-          
-          # Asegurarse de que no haya cambios locales que bloqueen la actualización
-          # Sincronizar forsozamente con la rama main para evitar conflictos de merge
           git fetch origin
           git reset --hard origin/main
           
-          # Reconstruir y levantar los contenedores en modo producción
-          # (Docker detectará qué cambió y solo reconstruirá lo necesario)
-          docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
+          echo "Deploying Frontend Stack..."
+          # Rebuild frontend and gateway specifically
+          docker compose -f docker-compose.prod.yml up -d --build --no-deps frontend
+          # Force restart gateway to catch frontend IP changes
+          docker compose -f docker-compose.prod.yml restart gateway
           
-          # Limpiar imágenes viejas para no llenar el disco del VPS
+          docker image prune -f
+
+  deploy-backend:
+    needs: check-changes
+    if: ${{ needs.check-changes.outputs.backend == 'true' || needs.check-changes.outputs.config == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+    - name: Deploy Backend Only
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USERNAME }}
+        key: ${{ secrets.KEY }}
+        port: 22
+        script: |
+          cd /etc/lamanodecastolo/pes6-lamanodecastolo
+          git fetch origin
+          git reset --hard origin/main
+          
+          echo "Deploying Backend Stack..."
+          # Rebuild backend services
+          docker compose -f docker-compose.prod.yml up -d --build --no-deps server db
+          
           docker image prune -f
