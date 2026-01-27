@@ -173,8 +173,8 @@ function RegisterForm({ onSuccess }: RegisterFormProps) {
                     type="button"
                     onClick={() => setInstallType('official')}
                     className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg text-sm font-bold transition-all duration-300 relative z-10 ${installType === 'official'
-                            ? 'text-white shadow-lg bg-gray-800 border border-gray-600'
-                            : 'text-gray-400 hover:text-white'
+                        ? 'text-white shadow-lg bg-gray-800 border border-gray-600'
+                        : 'text-gray-400 hover:text-white'
                         }`}
                 >
                     <Zap className={`w-4 h-4 ${installType === 'official' ? 'text-orange-500' : ''}`} />
@@ -184,8 +184,8 @@ function RegisterForm({ onSuccess }: RegisterFormProps) {
                     type="button"
                     onClick={() => setInstallType('manual')}
                     className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg text-sm font-bold transition-all duration-300 relative z-10 ${installType === 'manual'
-                            ? 'text-white shadow-lg bg-gray-800 border border-gray-600'
-                            : 'text-gray-400 hover:text-white'
+                        ? 'text-white shadow-lg bg-gray-800 border border-gray-600'
+                        : 'text-gray-400 hover:text-white'
                         }`}
                 >
                     <Cpu className={`w-4 h-4 ${installType === 'manual' ? 'text-blue-500' : ''}`} />
@@ -195,27 +195,29 @@ function RegisterForm({ onSuccess }: RegisterFormProps) {
 
             {/* Campo Serial */}
             <div className="space-y-2">
-                <label className="text-gray-400 text-xs font-bold uppercase tracking-widest pl-1">
-                    Serial del Juego (20 caracteres)
-                </label>
+                <div className="flex items-center justify-between pl-1 pr-1">
+                    <label className="text-gray-400 text-xs font-bold uppercase tracking-widest">
+                        Serial del Juego (20 caracteres)
+                    </label>
+                    {installType === 'official' && (
+                        <div className="flex items-center gap-1.5 bg-orange-500/10 border border-orange-500/20 px-2 py-0.5 rounded text-[10px] font-bold text-orange-400 tracking-wider animate-pulse">
+                            <Shield className="w-3 h-3" /> VERIFICADO
+                        </div>
+                    )}
+                </div>
                 <div className="relative group">
                     <input
                         type="text"
                         value={serial}
                         onChange={handleSerialChange}
-                        className={`w-full bg-gray-800/80 border rounded-xl px-5 py-4 text-white font-mono tracking-widest text-center transition-all focus:outline-none ${installType === 'official'
-                                ? 'border-orange-500/30 text-orange-400 cursor-not-allowed select-none'
-                                : 'border-gray-700 focus:border-blue-500 focus:ring-1 focus:ring-blue-500/50'
+                        className={`w-full bg-gray-800/80 border rounded-xl px-4 py-4 text-white font-mono tracking-widest text-center transition-all focus:outline-none ${installType === 'official'
+                            ? 'border-orange-500/30 text-orange-400 cursor-not-allowed select-none bg-orange-500/5'
+                            : 'border-gray-700 focus:border-blue-500 focus:ring-1 focus:ring-blue-500/50'
                             }`}
                         placeholder="XXXXXXXXXXXXXXXXXXXX"
                         disabled={installType === 'official'}
                         required
                     />
-                    {installType === 'official' && (
-                        <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-1.5 bg-orange-500/10 border border-orange-500/20 px-2 py-1 rounded text-[10px] font-bold text-orange-400 tracking-wider">
-                            <Shield className="w-3 h-3" /> VERIFICADO
-                        </div>
-                    )}
                 </div>
                 {installType === 'manual' ? (
                     <p className="text-xs text-blue-400 items-center gap-1 flex pl-1">
