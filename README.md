@@ -4,7 +4,7 @@
 
 Este repositorio contiene un servidor independiente para Pro Evolution Soccer 6 y Winning Eleven 2007, basado en Fiveserver.
 
-## 📋 Prerrequisitos
+## Prerrequisitos
 
 - Docker instalado
 - Puertos disponibles: 3306 (MySQL), 8190 (HTTP), 8191 (HTTPS), 10881 (PES6)
