@@ -1,5 +1,8 @@
 
 import { Download, Monitor, User, Users, Gamepad2, CheckCircle2 } from 'lucide-react';
+import dropboxIcon from '../assets/icons/dropbox.png';
+import mediafireIcon from '../assets/icons/mediafire.png';
+import windowsIcon from '../assets/icons/windows.png';
 
 const Downloads = () => {
   return (
@@ -61,10 +64,8 @@ const Downloads = () => {
               <button className="group relative w-full bg-blue-600 hover:bg-blue-500 text-white p-4 rounded-xl transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg hover:shadow-blue-600/25 flex items-center justify-between overflow-hidden">
                 <div className="flex items-center gap-4">
                   <div className="bg-white/20 p-2 rounded-lg">
-                    {/* Simple Mediafire Flame Logo Representation */}
-                    <svg className="w-6 h-6 text-white text-fill-current" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M16.5 7c-1.5 0-3.5 1.5-3.5 1.5s-1-3.5-4-3.5c-4 0-6 5-6 8 0 4.5 3.5 7.5 7 7.5 6 0 9-4.5 9-9 0-2.5-1-4.5-2.5-4.5z" />
-                    </svg>
+                    {/* Mediafire Icon */}
+                    <img src={mediafireIcon} alt="Mediafire" className="w-6 h-6 object-contain" />
                   </div>
                   <div className="flex flex-col items-start">
                     <span className="text-xs opacity-80 font-bold tracking-wider">SERVIDOR 1</span>
@@ -78,10 +79,8 @@ const Downloads = () => {
               <button className="group relative w-full bg-indigo-600 hover:bg-indigo-500 text-white p-4 rounded-xl transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg hover:shadow-indigo-600/25 flex items-center justify-between overflow-hidden">
                 <div className="flex items-center gap-4">
                   <div className="bg-white/20 p-2 rounded-lg">
-                    {/* Simple Dropbox Box Logo Representation */}
-                    <svg className="w-6 h-6 text-white" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M7 3l-5 4 5 4 5-4-5-4zm10 0l-5 4 5 4 5-4-5-4zm-10 10l-5 4 5 4 5-4-5-4zm10 0l-5 4 5 4 5-4-5-4zm-5 4.5l-5-3.8-2 1.6 7 5.7 7-5.7-2-1.6-5 3.8z" />
-                    </svg>
+                    {/* Dropbox Icon */}
+                    <img src={dropboxIcon} alt="Dropbox" className="w-6 h-6 object-contain" />
                   </div>
                   <div className="flex flex-col items-start">
                     <span className="text-xs opacity-80 font-bold tracking-wider">SERVIDOR 2</span>
@@ -100,9 +99,7 @@ const Downloads = () => {
             <div className="mb-10">
               <div className="flex items-center gap-4 bg-gray-700/30 p-4 rounded-2xl border border-gray-600/50">
                 {/* Windows Logo */}
-                <svg className="w-8 h-8 text-blue-400" viewBox="0 0 88 88" fill="currentColor">
-                  <path d="M0 12.402l35.687-4.86.016 34.423-35.67.212v-29.775zM35.703 45.474l-.013 34.05-35.69 4.885v-29.789l35.703-9.146zM39.697 6.138l48.303-6.57v38.935l-48.29-.168-.013-32.197zM39.71 45.474l48.29 9.17-.003 39.462-48.287-6.617v-42.015z" />
-                </svg>
+                <img src={windowsIcon} alt="Windows" className="w-8 h-8 object-contain" />
                 <div>
                   <h3 className="font-bold text-white">Compatible con Windows</h3>
                   <p className="text-sm text-gray-400">Windows 10 / 11 (64-bit)</p>
