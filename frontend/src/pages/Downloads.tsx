@@ -30,7 +30,7 @@ const Downloads = () => {
         <div className="bg-gray-800 rounded-[2.5rem] border border-gray-700/50 shadow-2xl shadow-black/50 overflow-hidden max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2">
 
           {/* Columna Izquierda (Información y Acción) */}
-          <div className="p-8 lg:p-12 flex flex-col justify-center space-y-8 relative overflow-hidden group">
+          <div className="p-8 lg:p-12 flex flex-col justify-center space-y-8 relative group">
             <div className="absolute inset-0 bg-gradient-to-br from-orange-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
             {/* Branding */}
@@ -74,9 +74,9 @@ const Downloads = () => {
                   <ChevronDown className={`w-6 h-6 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} />
                 </button>
 
-                {/* Dropdown Menu */}
+                {/* Dropdown Menu (Opens Upwards) */}
                 {isOpen && (
-                  <div className="absolute top-full left-0 right-0 mt-2 bg-gray-800 border border-gray-700 rounded-xl shadow-xl overflow-hidden animate-slide-in z-50">
+                  <div className="absolute bottom-full left-0 right-0 mb-2 bg-gray-800 border border-gray-700 rounded-xl shadow-xl overflow-hidden animate-slide-in z-50">
 
                     {/* Mediafire Option */}
                     <a
