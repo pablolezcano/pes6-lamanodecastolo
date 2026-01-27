@@ -1,6 +1,6 @@
 
 import { useState } from 'react';
-import { Download, Monitor, User, Users, Gamepad2, CheckCircle2, ChevronDown } from 'lucide-react';
+import { Download, Monitor, User, Users, Gamepad2, CheckCircle2, ChevronDown, ShieldCheck } from 'lucide-react';
 import dropboxIcon from '../assets/icons/dropbox.png';
 import mediafireIcon from '../assets/icons/mediafire.png';
 import windowsIcon from '../assets/icons/windows.png';
@@ -122,13 +122,24 @@ const Downloads = () => {
           <div className="bg-gray-800/50 p-8 lg:p-12 border-t lg:border-t-0 lg:border-l border-gray-700 flex flex-col justify-between backdrop-blur-sm rounded-b-[2.5rem] lg:rounded-r-[2.5rem] lg:rounded-bl-none">
 
             {/* Compatibilidad */}
-            <div className="mb-10">
-              <div className="flex items-center gap-4 bg-gray-700/30 p-4 rounded-2xl border border-gray-600/50">
+            <div className="mb-8">
+              <div className="flex items-center gap-4 bg-gray-700/30 p-4 rounded-2xl border border-gray-600/50 mb-4">
                 {/* Windows Logo */}
                 <img src={windowsIcon} alt="Windows" className="w-8 h-8 object-contain" />
                 <div>
                   <h3 className="font-bold text-white">Compatible con Windows</h3>
                   <p className="text-sm text-gray-400">Windows 10 / 11 (64-bit)</p>
+                </div>
+              </div>
+
+              {/* Nota Standalone */}
+              <div className="bg-blue-500/10 border border-blue-500/20 p-4 rounded-2xl flex gap-3">
+                <ShieldCheck className="w-6 h-6 text-blue-400 shrink-0 mt-0.5" />
+                <div>
+                  <h4 className="text-blue-400 font-bold text-sm uppercase tracking-wider mb-1">Instalación Independiente</h4>
+                  <p className="text-gray-300 text-sm leading-relaxed">
+                    Este cliente es <strong>Standalone</strong>. Su instalación no interfiere con otras versiones de PES 6 ni modifica tus archivos de opciones (.OPT) existentes.
+                  </p>
                 </div>
               </div>
             </div>
