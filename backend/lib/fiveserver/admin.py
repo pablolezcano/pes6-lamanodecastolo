@@ -606,7 +606,6 @@ class StatsResource(BaseXmlResource):
                 lobby_dict['users'].append(user_data)
 
             # Chat History
-            # Chat History
             lobby_dict['chat'] = []
             if getattr(lobby, 'chatHistory', None):
                 try:
