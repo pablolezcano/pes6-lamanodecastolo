@@ -166,9 +166,9 @@ const Downloads = () => {
         {/* Sección Inferior (Instrucciones) */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12 max-w-6xl mx-auto">
           {[
-            { step: "01", title: "Descargar y Descomprimir", desc: "Baja el archivo .rar y extraelo en tu carpeta de preferencia." },
-            { step: "02", title: "Instalar y Configurar", desc: "Ejecuta el instalador y configura el kitserver según tu PC." },
-            { step: "03", title: "Jugar Online", desc: "Abre el juego, ingresa tu serial y logueate para competir." }
+            { step: "01", title: "Descargar y Extraer", desc: "Baja el archivo .zip y descomprímelo en tu carpeta de preferencia." },
+            { step: "02", title: "Ejecutar Instalador", desc: "Ejecuta el archivo .exe y sigue los pasos del asistente de instalación." },
+            { step: "03", title: "¡A Jugar!", desc: "Una vez finalizar la instalación, abre el juego y disfruta de la experiencia definitiva." }
           ].map((card, idx) => (
             <div key={idx} className="bg-gray-800 rounded-3xl p-6 border border-gray-700/50 hover:border-orange-500/30 transition-all hover:bg-gray-800/80 group">
               <div className="text-4xl font-black text-gray-700 group-hover:text-orange-500/20 mb-4 transition-colors font-mono">{card.step}</div>
