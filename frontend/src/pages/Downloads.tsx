@@ -27,11 +27,11 @@ const Downloads = () => {
         </div>
 
         {/* Tarjeta Principal */}
-        <div className="bg-gray-800 rounded-[2.5rem] border border-gray-700/50 shadow-2xl shadow-black/50 overflow-hidden max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2">
+        <div className="bg-gray-800 rounded-[2.5rem] border border-gray-700/50 shadow-2xl shadow-black/50 max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2">
 
           {/* Columna Izquierda (Información y Acción) */}
-          <div className="p-8 lg:p-12 flex flex-col justify-center space-y-8 relative group">
-            <div className="absolute inset-0 bg-gradient-to-br from-orange-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+          <div className="p-8 lg:p-12 flex flex-col justify-center space-y-8 relative group rounded-t-[2.5rem] lg:rounded-l-[2.5rem] lg:rounded-tr-none">
+            <div className="absolute inset-0 bg-gradient-to-br from-orange-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-t-[2.5rem] lg:rounded-l-[2.5rem] lg:rounded-tr-none" />
 
             {/* Branding */}
             <div className="flex items-center gap-3 text-orange-500 mb-2 relative z-10">
@@ -74,9 +74,9 @@ const Downloads = () => {
                   <ChevronDown className={`w-6 h-6 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} />
                 </button>
 
-                {/* Dropdown Menu (Opens Upwards) */}
+                {/* Dropdown Menu */}
                 {isOpen && (
-                  <div className="absolute bottom-full left-0 right-0 mb-2 bg-gray-800 border border-gray-700 rounded-xl shadow-xl overflow-hidden animate-slide-in z-50">
+                  <div className="absolute top-full left-0 right-0 mt-2 bg-gray-800 border border-gray-700 rounded-xl shadow-xl overflow-hidden animate-slide-in z-50">
 
                     {/* Mediafire Option */}
                     <a
@@ -119,7 +119,7 @@ const Downloads = () => {
           </div>
 
           {/* Columna Derecha (Especificaciones Técnicas) */}
-          <div className="bg-gray-800/50 p-8 lg:p-12 border-t lg:border-t-0 lg:border-l border-gray-700 flex flex-col justify-between backdrop-blur-sm">
+          <div className="bg-gray-800/50 p-8 lg:p-12 border-t lg:border-t-0 lg:border-l border-gray-700 flex flex-col justify-between backdrop-blur-sm rounded-b-[2.5rem] lg:rounded-r-[2.5rem] lg:rounded-bl-none">
 
             {/* Compatibilidad */}
             <div className="mb-10">
