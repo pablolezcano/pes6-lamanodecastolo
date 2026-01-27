@@ -605,6 +605,22 @@ class StatsResource(BaseXmlResource):
                 except AttributeError: pass
                 lobby_dict['users'].append(user_data)
 
+            # Rooms (Waiting & Playing)
+            lobby_dict['rooms'] = []
+            if lobby.rooms:
+                sorted_rooms = sorted(lobby.rooms.values(), key=lambda r: r.id)
+                for room in sorted_rooms:
+                    room_data = {
+                        'id': room.id,
+                        'name': util.toUnicode(room.name),
+                        'isPrivate': room.usePassword,
+                        'phase': room.phase,
+                        'status': RoomState.stateText.get(room.phase, 'Unknown'),
+                        'players': [util.toUnicode(p.profile.name) for p in room.players],
+                        'owner': util.toUnicode(room.owner.profile.name) if room.owner else None
+                    }
+                    lobby_dict['rooms'].append(room_data)
+
             # Matches
             if m > 0 and lobby.showMatches:
                 matchRooms = [room for room in lobby.rooms.values()
