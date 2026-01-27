@@ -80,8 +80,12 @@ function RegisterForm({ onSuccess }: RegisterFormProps) {
         }
 
         try {
-            // Calculate hash
-            const hash = md5(cleanSerial + cleanUsername + '-' + password)
+            // Pad serial to 36 chars with null bytes to match backend expectation
+            let paddedSerial = cleanSerial;
+            while (paddedSerial.length < 36) {
+                paddedSerial += '\0';
+            }
+            const hash = md5(paddedSerial + cleanUsername + '-' + password)
 
             // Get nonce from backend or generate one
             let nonce = ''
