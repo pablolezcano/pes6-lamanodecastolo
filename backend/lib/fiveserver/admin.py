@@ -636,19 +636,36 @@ class StatsResource(BaseXmlResource):
 
             # Rooms (Waiting & Playing)
             lobby_dict['rooms'] = []
-            if lobby.rooms:
-                sorted_rooms = sorted(lobby.rooms.values(), key=lambda r: r.id)
-                for room in sorted_rooms:
-                    room_data = {
-                        'id': room.id,
-                        'name': util.toUnicode(room.name),
-                        'isPrivate': room.usePassword,
-                        'phase': room.phase,
-                        'status': RoomState.stateText.get(room.phase, 'Unknown'),
-                        'players': [util.toUnicode(p.profile.name) for p in room.players],
-                        'owner': util.toUnicode(room.owner.profile.name) if room.owner else None
-                    }
-                    lobby_dict['rooms'].append(room_data)
+            if getattr(lobby, 'rooms', None):
+                try:
+                    sorted_rooms = sorted(lobby.rooms.values(), key=lambda r: r.id)
+                    for room in sorted_rooms:
+                        if not room: continue
+                        
+                        # Safe owner name
+                        owner_name = None
+                        if getattr(room, 'owner', None) and getattr(room.owner, 'profile', None):
+                            owner_name = util.toUnicode(room.owner.profile.name)
+                            
+                        # Safe player list
+                        player_names = []
+                        if getattr(room, 'players', None):
+                            for p in room.players:
+                                if getattr(p, 'profile', None):
+                                    player_names.append(util.toUnicode(p.profile.name))
+                                    
+                        room_data = {
+                            'id': room.id,
+                            'name': util.toUnicode(room.name),
+                            'isPrivate': room.usePassword,
+                            'phase': getattr(room, 'phase', 0),
+                            'status': RoomState.stateText.get(getattr(room, 'phase', 0), 'Unknown'),
+                            'players': player_names,
+                            'owner': owner_name
+                        }
+                        lobby_dict['rooms'].append(room_data)
+                except Exception as e:
+                    log.msg("Error processing rooms for lobby %s: %s" % (lobby.name, str(e)))
 
             # Matches
             if m > 0 and lobby.showMatches:
