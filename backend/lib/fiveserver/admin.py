@@ -605,6 +605,19 @@ class StatsResource(BaseXmlResource):
                 except AttributeError: pass
                 lobby_dict['users'].append(user_data)
 
+            # Chat History
+            lobby_dict['chat'] = []
+            if lobby.chatHistory:
+                # Get last 10 messages
+                recent_chat = lobby.chatHistory[-10:]
+                for msg in recent_chat:
+                    chat_data = {
+                        'user': util.toUnicode(msg.fromProfile.name),
+                        'text': util.toUnicode(msg.text),
+                        'time': msg.timestamp.strftime("%H:%M")
+                    }
+                    lobby_dict['chat'].append(chat_data)
+
             # Rooms (Waiting & Playing)
             lobby_dict['rooms'] = []
             if lobby.rooms:
