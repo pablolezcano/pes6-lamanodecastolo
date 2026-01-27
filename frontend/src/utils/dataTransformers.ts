@@ -30,7 +30,18 @@ interface StatsResponse {
             players: string[]
             owner: string | null
         }>
+        chat?: Array<{
+            user: string
+            text: string
+            time: string
+        }>
     }>
+}
+
+export interface ChatMessage {
+    user: string
+    text: string
+    time: string
 }
 
 export interface WaitingRoom {
@@ -42,6 +53,7 @@ export interface WaitingRoom {
     isPrivate: boolean
     status: string
     owner: string | null
+    chat: ChatMessage[]
 }
 
 export interface Match {
@@ -127,7 +139,8 @@ export function transformStatsToWaitingRooms(stats: StatsResponse): WaitingRoom[
                     maxPlayers: 2, // Generalmente 1v1, ajustar si es 2v2
                     isPrivate: room.isPrivate,
                     status: room.status,
-                    owner: room.owner
+                    owner: room.owner,
+                    chat: lobby.chat || [] // Chat del lobby asociado
                 })
             })
         }

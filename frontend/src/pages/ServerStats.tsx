@@ -163,9 +163,20 @@ function ServerStats() {
                                             </div>
                                         </div>
 
-                                        <button className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg transition-colors flex items-center justify-center gap-2">
-                                            UNIRSE AL JUEGO
-                                        </button>
+                                        {/* Chat Preview */}
+                                        {room.chat && room.chat.length > 0 && (
+                                            <div className="mt-4 pt-3 border-t border-gray-700">
+                                                <div className="text-xs text-gray-400 mb-2 uppercase font-bold tracking-wider">Chat de Sala</div>
+                                                <div className="space-y-1 max-h-32 overflow-y-auto pr-1 custom-scrollbar">
+                                                    {room.chat.map((msg, idx) => (
+                                                        <div key={idx} className="text-xs text-gray-300 break-words">
+                                                            <span className="text-gray-500 font-mono text-[10px] mr-1">[{msg.time}]</span>
+                                                            <span className="text-orange-400 font-bold">{msg.user}:</span> {msg.text}
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        )}
                                     </div>
                                 ))}
                             </div>
