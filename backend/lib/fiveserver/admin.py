@@ -3,7 +3,7 @@ from twisted.internet import reactor, defer
 from twisted.words.xish import domish
 from xml.sax.saxutils import escape
 from fiveserver import log
-from fiveserver.model.lobby import MatchState, Match, Match6
+from fiveserver.model.lobby import MatchState, Match, Match6, RoomState
 from fiveserver.model import util
 from Crypto.Cipher import Blowfish
 import binascii
