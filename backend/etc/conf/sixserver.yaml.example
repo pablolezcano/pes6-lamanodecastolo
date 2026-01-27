@@ -7,7 +7,8 @@ Comment: |
 
 ServerIP: IPDELSERVIDOR
 ListenOn: ""
-cipherKey: ""
+# Default key from fiveserver/config.py
+cipherKey: "27501fd04e6b82c831024dac5c6305221974deb9388a21901d576cbbe2f377ef23d75486010f37819afe6c321a0146d21544ec365bf7289a"
 IpDetectUri: "http://mapote.com/cgi-bin/ip.py"
 
 Lobbies:
@@ -82,4 +83,3 @@ ServerName: "Fiveserver"
 
 Greeting:
     "text": "la mano de castolo, prueba de conexion y testeo de juego"
-
