@@ -1,12 +1,10 @@
 
-import { useState } from 'react';
-import { Download, Monitor, User, Users, Gamepad2, CheckCircle2, ChevronDown, ShieldCheck } from 'lucide-react';
+import { Download, Monitor, User, Users, Gamepad2, CheckCircle2, ShieldCheck } from 'lucide-react';
 import dropboxIcon from '../assets/icons/dropbox.png';
 import mediafireIcon from '../assets/icons/mediafire.png';
 import windowsIcon from '../assets/icons/windows.png';
 
 const Downloads = () => {
-  const [isOpen, setIsOpen] = useState(false);
   return (
     <div className="min-h-screen bg-gray-900 text-white font-sans p-6 overflow-hidden">
       {/* Background decoration */}
@@ -60,61 +58,43 @@ const Downloads = () => {
               ))}
             </ul>
 
-            {/* Boton de Descarga con Dropdown */}
-            <div className="pt-4 relative z-20">
-              <div className="relative">
-                <button
-                  onClick={() => setIsOpen(!isOpen)}
-                  className="w-full bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-400 hover:to-orange-500 text-white p-5 rounded-xl transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg hover:shadow-orange-500/25 flex items-center justify-between font-bold text-lg group"
-                >
-                  <span className="flex items-center gap-3">
-                    <Download className="w-6 h-6" />
-                    DESCARGAR CLIENTE
-                  </span>
-                  <ChevronDown className={`w-6 h-6 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} />
-                </button>
+            {/* Opciones de Descarga (Visibles) */}
+            <div className="pt-6 relative z-20 space-y-4">
+              <h3 className="text-gray-400 text-xs font-bold uppercase tracking-widest pl-1">Selecciona un servidor</h3>
 
-                {/* Dropdown Menu */}
-                {isOpen && (
-                  <div className="absolute top-full left-0 right-0 mt-2 bg-gray-800 border border-gray-700 rounded-xl shadow-xl overflow-hidden animate-slide-in z-50">
+              {/* Mediafire Option */}
+              <a
+                href="https://www.mediafire.com/file/pjg2x68akj35yui/Instalador_-_PES6_La_Mano_de_Castolo_-_v0.1.zip/file"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-4 p-4 rounded-xl bg-gray-800 border border-gray-700 hover:border-blue-500/50 hover:bg-gray-750 transition-all duration-300 shadow-lg hover:shadow-blue-500/20 group"
+              >
+                <div className="bg-white p-2 rounded-lg shrink-0 group-hover:scale-105 transition-transform duration-300">
+                  <img src={mediafireIcon} alt="Mediafire" className="w-8 h-8 object-contain" />
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-white font-bold text-lg group-hover:text-blue-400 transition-colors">Mediafire</span>
+                  <span className="text-sm text-gray-400 font-mono">Descarga directa .zip</span>
+                </div>
+                <Download className="w-6 h-6 text-gray-500 ml-auto group-hover:text-blue-400 transition-colors" />
+              </a>
 
-                    {/* Mediafire Option */}
-                    <a
-                      href="https://www.mediafire.com/file/pjg2x68akj35yui/Instalador_-_PES6_La_Mano_de_Castolo_-_v0.1.zip/file"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-4 p-4 hover:bg-gray-700/50 transition-colors border-b border-gray-700/50 group/item"
-                    >
-                      <div className="bg-white p-2 rounded-lg shrink-0">
-                        <img src={mediafireIcon} alt="Mediafire" className="w-8 h-8 object-contain" />
-                      </div>
-                      <div className="flex flex-col">
-                        <span className="text-white font-bold group-hover/item:text-blue-400 transition-colors">Servidor 1: Mediafire</span>
-                        <span className="text-sm text-gray-400">Descarga directa y rápida</span>
-                      </div>
-                      <Download className="w-5 h-5 text-gray-500 ml-auto group-hover/item:text-white transition-colors" />
-                    </a>
-
-                    {/* Dropbox Option */}
-                    <a
-                      href="https://www.dropbox.com/scl/fi/t3vbz3xs1denb8mveu6ju/Instalador-PES6-La-Mano-de-Castolo-v0.1.zip?rlkey=3pi7czno7ou3hd56ttv8pkyi9&st=ouxpjc0v&dl=0"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-4 p-4 hover:bg-gray-700/50 transition-colors group/item"
-                    >
-                      <div className="bg-white p-2 rounded-lg shrink-0">
-                        <img src={dropboxIcon} alt="Dropbox" className="w-8 h-8 object-contain" />
-                      </div>
-                      <div className="flex flex-col">
-                        <span className="text-white font-bold group-hover/item:text-blue-400 transition-colors">Servidor 2: Dropbox</span>
-                        <span className="text-sm text-gray-400">Alternativa segura</span>
-                      </div>
-                      <Download className="w-5 h-5 text-gray-500 ml-auto group-hover/item:text-white transition-colors" />
-                    </a>
-
-                  </div>
-                )}
-              </div>
+              {/* Dropbox Option */}
+              <a
+                href="https://www.dropbox.com/scl/fi/t3vbz3xs1denb8mveu6ju/Instalador-PES6-La-Mano-de-Castolo-v0.1.zip?rlkey=3pi7czno7ou3hd56ttv8pkyi9&st=ouxpjc0v&dl=0"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-4 p-4 rounded-xl bg-gray-800 border border-gray-700 hover:border-indigo-500/50 hover:bg-gray-750 transition-all duration-300 shadow-lg hover:shadow-indigo-500/20 group"
+              >
+                <div className="bg-white p-2 rounded-lg shrink-0 group-hover:scale-105 transition-transform duration-300">
+                  <img src={dropboxIcon} alt="Dropbox" className="w-8 h-8 object-contain" />
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-white font-bold text-lg group-hover:text-indigo-400 transition-colors">Dropbox</span>
+                  <span className="text-sm text-gray-400 font-mono">Mirror alternativo</span>
+                </div>
+                <Download className="w-6 h-6 text-gray-500 ml-auto group-hover:text-indigo-400 transition-colors" />
+              </a>
             </div>
           </div>
 
