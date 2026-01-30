@@ -3,6 +3,8 @@ import { Download, UserPlus, KeyRound, Gamepad2, ArrowRight, Check, MessageSquar
 import { Link } from 'react-router-dom';
 import redMenuImg from '../assets/guide/step3-red.png';
 import loginFieldImg from '../assets/guide/step3-login.png';
+import installerImg from '../assets/guide/step1-installer.png';
+import registerImg from '../assets/guide/step2-register.png';
 
 const Guide = () => {
     return (
@@ -31,15 +33,20 @@ const Guide = () => {
                             <Download size={40} strokeWidth={1.5} />
                         </div>
                         <div className="flex-1">
-                            <h2 className="text-2xl font-black italic uppercase mb-4">Descarga el Juego</h2>
+                            <h2 className="text-2xl font-black italic uppercase mb-4">Descarga e Instalación del Juego</h2>
                             <ul className="space-y-3 mb-6">
-                                {['Cliente Exclusivo LMC', 'Voces y Textos en Español', 'Listo para Jugar (Portable)'].map((item, i) => (
+                                {['Cliente Exclusivo LMC', 'Voces y Textos en Español', 'Listo para Jugar'].map((item, i) => (
                                     <li key={i} className="flex items-center gap-3 text-gray-400 text-sm font-medium">
                                         <div className="bg-green-500/10 p-1 rounded-full"><Check size={12} className="text-green-500" /></div>
                                         {item}
                                     </li>
                                 ))}
                             </ul>
+
+                            <div className="rounded-xl overflow-hidden border border-gray-700 shadow-2xl relative mb-6 group-hover:scale-[1.02] transition-transform duration-500">
+                                <img src={installerImg} alt="Instalador PES6" className="w-full h-auto object-cover opacity-90 group-hover:opacity-100 transition-opacity" />
+                            </div>
+
                             <Link to="/downloads" className="inline-flex items-center gap-2 bg-orange-600 hover:bg-orange-500 text-white px-6 py-3 rounded-xl font-bold uppercase tracking-wide text-sm transition-colors shadow-lg shadow-orange-600/20">
                                 Ir a Descargas <ArrowRight size={18} />
                             </Link>
@@ -62,6 +69,10 @@ const Guide = () => {
                             <p className="text-gray-400 text-sm mb-6 leading-relaxed">
                                 Necesitarás una cuenta para acceder al servidor. El registro es rápido y gratuito.
                             </p>
+
+                            <div className="rounded-xl overflow-hidden border border-gray-700 shadow-2xl relative mb-6 group-hover:scale-[1.02] transition-transform duration-500">
+                                <img src={registerImg} alt="Registro de Cuenta" className="w-full h-auto object-cover opacity-90 group-hover:opacity-100 transition-opacity" />
+                            </div>
 
                             <div className="bg-gray-950 rounded-xl p-4 border border-gray-800 mb-6">
                                 <div className="flex items-start gap-3">
@@ -133,7 +144,7 @@ const Guide = () => {
                                     <span className="font-bold block mb-1">¡ATENCIÓN!</span>
                                     En el campo "Contraseña" debes escribir tu usuario, un guión y tu contraseña todo junto.
                                     <br />
-                                    <span className="text-gray-400 font-mono mt-2 block bg-black/30 py-1 rounded">pablo-123456</span>
+                                    <span className="text-gray-400 font-mono mt-2 block bg-black/30 py-1 rounded">messi-12345</span>
                                 </p>
                             </div>
                         </div>
