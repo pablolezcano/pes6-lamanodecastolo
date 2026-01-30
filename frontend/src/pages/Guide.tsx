@@ -164,15 +164,15 @@ const Guide = () => {
 
                 {/* FOOTER DISCORD */}
                 <div className="mt-16 text-center border-t border-gray-900 pt-12">
-                    <p className="text-gray-500 mb-6 font-medium">¿Sigues teniendo problemas para entrar?</p>
+                    <p className="text-gray-400 font-bold uppercase tracking-widest text-sm mb-6">¿Sigues con dudas?</p>
                     <a
-                        href="https://discord.gg/your-discord-link"
+                        href="https://discord.gg/f4ErZ4YBCw"
                         target="_blank"
                         rel="noopener noreferrer"
                         className="inline-flex items-center gap-3 bg-[#5865F2] hover:bg-[#4752C4] text-white px-8 py-4 rounded-2xl font-black uppercase tracking-wide transition-all transform hover:scale-105 shadow-xl shadow-[#5865F2]/20"
                     >
                         <MessageSquare size={24} fill="white" />
-                        Soporte en Discord
+                        Chat de Discord
                     </a>
                 </div>
 

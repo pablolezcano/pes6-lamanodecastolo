@@ -148,6 +148,37 @@ function Home() {
                 </div>
             </div>
 
+            {/* Discord Community Section */}
+            <div className="bg-gray-900 py-8">
+                <div className="max-w-5xl mx-auto px-4">
+                    <div className="bg-[#0a0a1f] rounded-3xl p-10 md:p-16 border border-indigo-900/30 text-center relative overflow-hidden group">
+                        {/* Background Decoration */}
+                        <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-indigo-900/20 to-transparent pointer-events-none"></div>
+                        <div className="absolute -right-10 -bottom-10 opacity-10 transform rotate-12">
+                            <MessageSquare size={200} fill="white" />
+                        </div>
+
+                        <div className="relative z-10">
+                            <h3 className="text-3xl md:text-5xl font-black italic text-white mb-4 uppercase leading-tight">
+                                Únete al <span className="text-[#5865F2]">Vestuario</span> en Discord
+                            </h3>
+                            <p className="text-indigo-200 text-lg md:text-xl max-w-2xl mx-auto mb-10 leading-relaxed font-medium">
+                                Organiza partidos, participa en sorteos semanales y mantente al día con los parches oficiales. ¡La comunidad te espera!
+                            </p>
+
+                            <a
+                                href="https://discord.gg/f4ErZ4YBCw"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center gap-3 bg-[#5865F2] hover:bg-[#4752C4] text-white font-bold py-4 px-8 rounded-xl text-lg transition-all transform hover:scale-105 shadow-lg shadow-indigo-500/30"
+                            >
+                                ENTRAR A LA COMUNIDAD <MessageSquare size={20} fill="currentColor" />
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             {/* CTA Section */}
             <div className="bg-gradient-to-r from-orange-900/30 to-gray-900 py-16">
                 <div className="max-w-7xl mx-auto px-4 text-center">
