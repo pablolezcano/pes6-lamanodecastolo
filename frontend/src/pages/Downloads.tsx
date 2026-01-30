@@ -2,6 +2,7 @@
 import { Download, Monitor, User, Users, Gamepad2, CheckCircle2, ShieldCheck } from 'lucide-react';
 import dropboxIcon from '../assets/icons/dropbox.png';
 import mediafireIcon from '../assets/icons/mediafire.png';
+import megaIcon from '../assets/icons/mega.png';
 import windowsIcon from '../assets/icons/windows.png';
 
 const Downloads = () => {
@@ -62,9 +63,26 @@ const Downloads = () => {
             <div className="pt-6 relative z-20 space-y-4">
               <h3 className="text-gray-400 text-xs font-bold uppercase tracking-widest pl-1">Selecciona un servidor</h3>
 
+              {/* Mega Option */}
+              <a
+                href="https://mega.nz/file/MxITBRzQ#wxKoVEz2VhKeQcE9DzGJWlBLut6q_7iwpwdlvw1ziOg"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-4 p-4 rounded-xl bg-gray-800 border border-gray-700 hover:border-red-500/50 hover:bg-gray-750 transition-all duration-300 shadow-lg hover:shadow-red-500/20 group"
+              >
+                <div className="bg-white p-2 rounded-lg shrink-0 group-hover:scale-105 transition-transform duration-300">
+                  <img src={megaIcon} alt="Mega" className="w-8 h-8 object-contain" />
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-white font-bold text-lg group-hover:text-red-500 transition-colors">Mega</span>
+                  <span className="text-sm text-gray-400 font-mono">Descarga Rápida</span>
+                </div>
+                <Download className="w-6 h-6 text-gray-500 ml-auto group-hover:text-red-500 transition-colors" />
+              </a>
+
               {/* Mediafire Option */}
               <a
-                href="https://www.mediafire.com/file/pjg2x68akj35yui/Instalador_-_PES6_La_Mano_de_Castolo_-_v0.1.zip/file"
+                href="https://www.mediafire.com/file/6i60lhtdw2av8bl/Instalador_-_PES6_La_Mano_de_Castolo_-_v1.0.zip/file"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-4 p-4 rounded-xl bg-gray-800 border border-gray-700 hover:border-blue-500/50 hover:bg-gray-750 transition-all duration-300 shadow-lg hover:shadow-blue-500/20 group"
@@ -81,7 +99,7 @@ const Downloads = () => {
 
               {/* Dropbox Option */}
               <a
-                href="https://www.dropbox.com/scl/fi/t3vbz3xs1denb8mveu6ju/Instalador-PES6-La-Mano-de-Castolo-v0.1.zip?rlkey=3pi7czno7ou3hd56ttv8pkyi9&st=ouxpjc0v&dl=0"
+                href="https://www.dropbox.com/scl/fi/4f9woukdosnauzxdev1mi/Instalador-PES6-La-Mano-de-Castolo-v1.0.zip?rlkey=htqupr48uf0n0f9mtkg29lsqy&st=pmdt5szq&dl=0"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-4 p-4 rounded-xl bg-gray-800 border border-gray-700 hover:border-indigo-500/50 hover:bg-gray-750 transition-all duration-300 shadow-lg hover:shadow-indigo-500/20 group"
