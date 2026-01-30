@@ -79,13 +79,18 @@ function Home() {
                     </p>
 
 
-                    {/* CTA Buttons */}
-                    <div className="flex justify-center mb-12">
+                    <div className="flex flex-col items-center gap-4 mb-12">
                         <Link
                             to="/server"
-                            className="bg-orange-500 hover:bg-orange-600 text-white font-bold py-4 px-10 rounded-lg text-xl transition-all transform hover:scale-105 shadow-lg"
+                            className="bg-orange-500 hover:bg-orange-600 text-white font-bold py-4 px-10 rounded-lg text-xl transition-all transform hover:scale-105 shadow-lg w-full md:w-auto"
                         >
                             🏆 Acceder al Vestuario
+                        </Link>
+                        <Link
+                            to="/guide"
+                            className="bg-gray-800/80 hover:bg-gray-700 text-white font-bold py-3 px-10 rounded-lg text-lg transition-all transform hover:scale-105 shadow-lg border border-gray-600 hover:border-gray-500 w-full md:w-auto"
+                        >
+                            📘 ¿Cómo Jugar?
                         </Link>
                     </div>
                 </div>
