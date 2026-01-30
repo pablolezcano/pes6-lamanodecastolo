@@ -9,6 +9,7 @@ import Auth from './pages/Auth'
 import Account from './pages/Account'
 import ServerStats from './pages/ServerStats'
 import MatchHistory from './pages/MatchHistory'
+import Guide from './pages/Guide'
 import { AuthProvider, useAuth } from './context/AuthContext'
 import './index.css'
 
@@ -32,6 +33,7 @@ function App() {
           <Route path="/history" element={<Layout><MatchHistory /></Layout>} />
           <Route path="/account" element={<Layout><Account /></Layout>} />
           <Route path="/auth" element={<Layout><Auth /></Layout>} />
+          <Route path="/guide" element={<Layout><Guide /></Layout>} />
 
           {/* Auth routes without Layout (full page) */}
           <Route path="/login" element={<Login />} />
