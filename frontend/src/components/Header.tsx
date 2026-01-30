@@ -22,8 +22,8 @@ function Header() {
                     {/* Logo */}
                     <div className="flex items-center">
                         <Link to="/" className="flex items-center gap-2">
-                            <span className="text-3xl">⚽</span>
-                            <span className="text-white font-bold text-xl">La mano de Castolo</span>
+                            <img src="/logo-lmc.png" alt="LMC Logo" className="h-12 w-auto object-contain" />
+                            <span className="text-white font-bold text-xl ml-2">La mano de Castolo</span>
                         </Link>
                     </div>
 
