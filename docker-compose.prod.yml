@@ -48,6 +48,8 @@ services:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
     expose:
       - "3306"
+    ports:
+      - "3306:3306"
     volumes:
       - ./mysql_data:/var/lib/mysql
     networks:
@@ -71,19 +73,17 @@ services:
       - ADMIN_USER=${ADMIN_USER}
       - ADMIN_PASSWORD=${ADMIN_PASSWORD}
       - FSROOT=/opt/fiveserver
+    # En modo host, el "expose" es irrelevante pero lo dejamos por documentacion
     expose:
       - "8190"
       - "8191"
       - "8192"
-    ports:
-      # Game ports must remain public
-      - "10881:10881"
-      - "10881:10881/udp"
-      - "20200-20203:20200-20203"
+    # Network Host para que el server vea las IPs reales y funcione el P2P
+    network_mode: "host"
+    extra_hosts:
+      - "pes6-mysql:127.0.0.1"
     volumes:
       - ./backend/etc/data:/opt/fiveserver/etc/data
-    networks:
-      - pes6-net
 
 networks:
   pes6-net:
