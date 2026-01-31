@@ -78,6 +78,7 @@ services:
     ports:
       # Game ports must remain public
       - "10881:10881"
+      - "10881:10881/udp"
       - "20200-20203:20200-20203"
     volumes:
       - ./backend/etc/data:/opt/fiveserver/etc/data
