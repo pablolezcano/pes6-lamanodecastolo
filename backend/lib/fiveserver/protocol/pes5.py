@@ -733,7 +733,10 @@ class NetworkMenuService(LoginService):
     def selectLobby_4202(self, pkt):
         self._user.state = user.UserState()
         self._user.state.lobbyId = struct.unpack('!B',pkt.data[0:1])[0]
-        self._user.state.ip1 = pkt.data[1:17]
+        # Use observed IP instead of client-reported IP (which is often private LAN IP)
+        # This fixes "No Signal" issues by allowing NAT traversal via public IP
+        real_ip = self.transport.getPeer().host
+        self._user.state.ip1 = util.padWithZeros(real_ip, 16)
         self._user.state.ip2 = pkt.data[19:35]
         self._user.state.udpPort1 = struct.unpack('!H',pkt.data[17:19])[0]
         self._user.state.udpPort2 = struct.unpack('!H',pkt.data[35:37])[0]
